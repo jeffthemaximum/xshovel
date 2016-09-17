@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
 import gspread
 import requests
 import bs4
 import pudb
 import cgi
+import os
+import urllib
 from oauth2client.service_account import ServiceAccountCredentials
 
 class Scraper:
@@ -146,7 +149,7 @@ class Xhelper:
 
     def authorize(self):
         scope = ['https://spreadsheets.google.com/feeds']
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(self.json_file_name, scope)
+        credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(self.json_file_name), scope)
         return gspread.authorize(credentials)
 
 
@@ -387,7 +390,12 @@ class Wiley:
 
 def main(sheet_name):
     try:
-        xhelper = Xhelper(json_file_name = 'scraper/secrets/microryza-jeff-e07a11b3dbc9.json', spread_sheet_name = sheet_name)
+        f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
+        opener = urllib.URLopener()
+        myfile = opener.open(f)
+        file_as_json_str = myfile.read()
+        pu.db
+        xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = sheet_name)
         for sheet in xhelper.worksheets_list:
             if 'wiley' in sheet.title.lower():
                 wiley = Wiley(xhelper = xhelper, sheet = sheet)
