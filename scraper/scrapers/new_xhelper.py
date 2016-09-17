@@ -394,7 +394,6 @@ def main(sheet_name):
         opener = urllib.URLopener()
         myfile = opener.open(f)
         file_as_json_str = myfile.read()
-        pu.db
         xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = sheet_name)
         for sheet in xhelper.worksheets_list:
             if 'wiley' in sheet.title.lower():
