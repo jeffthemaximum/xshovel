@@ -2,7 +2,7 @@ import re
 import json
 import logging
 from channels import Group
-from scraper.scrapers.xhelper import main
+from scraper.scrapers.new_xhelper import main
 
 log = logging.getLogger(__name__)
 
