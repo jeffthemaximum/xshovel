@@ -2,11 +2,14 @@ import random
 import string
 from django.db import transaction
 from django.shortcuts import render, redirect
+from scraper.forms import sheetNameForm
 import haikunator
 from .models import Room
+import pudb
 
 def about(request):
-    return render(request, "chat/about.html")
+    form = sheetNameForm()
+    return render(request, "chat/about.html", {'form': form})
 
 def new_room(request):
     """
