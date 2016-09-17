@@ -2,3 +2,4 @@ venv
 *.pyc
 staticfiles
 scraper/secrets/
+db.sqlite3

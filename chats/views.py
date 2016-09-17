@@ -19,7 +19,7 @@ def new_room(request):
             if Room.objects.filter(label=label).exists():
                 continue
             new_room = Room.objects.create(label=label)
-    return redirect(chat_room, label=label)
+    return redirect('chats:chat_room', label=label)
 
 def chat_room(request, label):
     """

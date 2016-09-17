@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'chats',
     'channels',
+    'scraper',
 ]
 
 MIDDLEWARE_CLASSES = [

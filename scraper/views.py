@@ -6,7 +6,8 @@ import pudb
 
 # Create your views here.
 @csrf_exempt
-def api(request):
+def new(request):
+    pu.db
     name = request.POST.get('s')
     id = request.POST.get('id')
     scrape_and_update_sheet_task.delay(name, id)

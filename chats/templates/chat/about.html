@@ -14,7 +14,7 @@
     <div class="six columns">
       <h3>Chat</h3>
       <p>
-        <a class="button button-primary" href="{% url 'new_room' %}">Create new chat room</a>
+        <a class="button button-primary" href="{% url 'chats:new_room' %}">Create new chat room</a>
       </p>
       <p class="quiet">
         Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code> 
@@ -23,15 +23,27 @@
     </div>
     <div class="six columns">
       <h3>Scraper</h3>
+      
+      <form action="{% url 'scraper:new' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="twelve columns">
+            <label for="sheetName">Sheet Name</label>
+            <input class="u-full-width" type="text" placeholder="fuzzy bunny" id="sheetName">
+          </div>
+        </div>
+        <input class="button-primary" type="submit" value="Submit">
+      </form>
+      
       <p class="quiet">
-        <ul>
+        <ul class="quiet">
           <li>Make a Google Spreadsheet</li>
-          <li>Make sure you have a sheet with wiley in it's sheet name</li>
-          <li>Share your Google Spreadsheet with 123114053576-compute@developer.gserviceaccount.com</li>
-          <li>Make a column titled pageUrl on the 'wiley' sheet</li>
+          <li>Make sure you have a sheet with <b>wiley</b> in it's sheet name</li>
+          <li>Share your Google Spreadsheet with <b>123114053576-compute@developer.gserviceaccount.com</b></li>
+          <li>Make a column titled <b>pageUrl</b> on the 'wiley' sheet</li>
           <li>Fill your Wiley url's in that column</li>
           <li>Change spread_sheet_name on line 389 of xhelper.py and save</li>
-          <li><You're done. Enjoy the magic. Or maybe not, cuz it might not work, too./li>
+          <li>You're done. Enjoy the magic. Or maybe not, cuz it might not work, too.</li>
         </ul>
       </p>
     </div>

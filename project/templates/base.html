@@ -11,6 +11,20 @@
   <link rel="stylesheet" href="{% static 'chat.css' %}">
 </head>
 <body>
+  <!--Navigation-->
+  <div class="band navigation">
+      <nav class="container primary">
+          <div class="sixteen columns">
+              <ul>
+                  <li><a href="{% url 'chats:about' %}">Home</a></li>
+                  <!--<li><a href="#">About Us</a></li>
+                  <li><a href="#">Projects</a></li>
+                  <li><a href="#">Contact Us</a></li>-->
+              </ul>
+          </div>
+      </nav>
+  </div>
+
   <div class="section">
     <div class="container">
       {% block content %}{% endblock content %}
