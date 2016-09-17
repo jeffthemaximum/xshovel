@@ -9,7 +9,7 @@ import pudb
 @csrf_exempt
 def new(request):
     name = {
-        'sheet_name': request.POST.get('sheet_name')
+        'sheet_name': request.POST.get('name')
     }
     Channel('scrape_wiley_by_sheet_name').send(name)
     return HttpResponse('hello')

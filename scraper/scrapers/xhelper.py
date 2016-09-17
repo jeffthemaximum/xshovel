@@ -362,7 +362,8 @@ class Wiley:
 
 def main(sheet_name):
     try:
-        xhelper = Xhelper(json_file_name = 'microryza-jeff-e07a11b3dbc9.json', spread_sheet_name = sheet_name)
+        pu.db
+        xhelper = Xhelper(json_file_name = 'scraper/secrets/microryza-jeff-e07a11b3dbc9.json', spread_sheet_name = sheet_name)
         for sheet in xhelper.worksheets_list:
             if 'wiley' in sheet.title.lower():
                 wiley = Wiley(xhelper = xhelper, sheet = sheet)
