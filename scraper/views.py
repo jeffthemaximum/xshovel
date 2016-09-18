@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from scraper.tasks import scrape_and_update_sheet_task
@@ -16,8 +16,8 @@ def new(request):
         'sheet_id': scrape.id
     }
     Channel('scrape_wiley_by_sheet_name').send(name)
-    return redirect('scraper:show', id=scrape.id)
+    return redirect('scraper:show', scrape_id=scrape.id)
 
-def show(request, id):
-
+def show(request, scrape_id):
+    pu.db
     return HttpResponse('hello')
