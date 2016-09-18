@@ -7,6 +7,12 @@ $(function() {
         var data = message.data;
         var chat = $("#chat")
         var ele = $('<tr></tr>')
+
+        if (data === "COMPLETE!") {
+            chat.prepend(
+                '<img src="http://new2.fjcdn.com/gifs/Everyday+i+m+shuffling_7d4fe9_3215136.gif">'
+            )
+        }
         ele.append(
             $("<td></td>").text(data)
         )  
