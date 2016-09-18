@@ -8,6 +8,10 @@ import cgi
 import os
 import urllib
 from oauth2client.service_account import ServiceAccountCredentials
+from channels import Group
+
+scrape_id = None
+message = None
 
 class Scraper:
     def __init__(self, url):
@@ -161,11 +165,15 @@ class Sheet:
 
 
 class Wiley:
-    def __init__(self, xhelper, sheet):
+    def __init__(self, xhelper, sheet, scrape_id, message):
         self.xhelper = xhelper
+        self.scrape_id = scrape_id
+        self.message = message
         print 'getting sheet'
+        Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': 'getting sheet'})
         self.sheet = Sheet(self.xhelper, sheet)
         print 'got sheet'
+        Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': 'got sheet'})
         # self.email_col_num = Helpers.get_column_number(self.sheet, 'email')
         self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
         # self.author_col_num = Helpers.get_column_number(self.sheet, 'author')
@@ -178,6 +186,7 @@ class Wiley:
         # self.found_first_names = [None] * len(self.all_emails)
         # self.found_emails = [None] * len(self.all_emails)
         print "done wiley init"
+        Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': "done wiley init"})
 
     def clean_author_email(self, author):
         author = author.encode('ascii', 'replace').split(' ')
@@ -185,6 +194,7 @@ class Wiley:
 
     def get_first_name_by_url(self, url):
         print url
+        Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': url})
         scraped = Scraper(url)
         self.all_soups.append(scraped)
         try:
@@ -321,6 +331,7 @@ class Wiley:
                 cell_list[i].value = first_names[i].title()
             self.sheet.sheet.update_cells(cell_list)
             print first_names
+            Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': json.dumps(first_names)})
 
             # TODO get email
             emails = self.get_emails()
@@ -331,6 +342,7 @@ class Wiley:
                 cell_list[i].value = emails[i]
             self.sheet.sheet.update_cells(cell_list)
             print emails
+            Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': json.dumps(emails)})
 
             # check if email is international
             # iterate through list of emails
@@ -382,14 +394,17 @@ class Wiley:
             self.sheet.sheet.update_acell(ca_col_letter + '1', str(ca_count) + " " + 'CA emails')
             self.sheet.sheet.update_acell(gov_col_letter + '1', str(gov_count) + " " + 'GOV emails')
             self.sheet.sheet.update_acell(other_col_letter + '1', str(other_count) + " " + 'OTHER emails')
+            Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': "COMPLETE!"})
 
     def run(self):
         return self.wiley()
 
 
 
-def main(sheet_name):
+def main(sheet_name, scrape_id, message):
     try:
+        scrape_id = scrape_id
+        message = message
         f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
         opener = urllib.URLopener()
         myfile = opener.open(f)
@@ -397,10 +412,11 @@ def main(sheet_name):
         xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = sheet_name)
         for sheet in xhelper.worksheets_list:
             if 'wiley' in sheet.title.lower():
-                wiley = Wiley(xhelper = xhelper, sheet = sheet)
+                wiley = Wiley(xhelper = xhelper, sheet = sheet, scrape_id = scrape_id, message = message)
                 return wiley.run()
     except:
         print 'FALSE ' * 100
+        Group('scraper-'+str(scrape_id), channel_layer=message.channel_layer).send({'text': "FAILED :("})
         return False
 
 if __name__ == '__main__':

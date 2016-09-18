@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from scraper.tasks import scrape_and_update_sheet_task
 from channels import Channel
 from scraper.models import Scrape
+from django.shortcuts import get_object_or_404
 import pudb
 
 # Create your views here.
@@ -13,11 +14,14 @@ def new(request):
     scrape.save()
     name = {
         'sheet_name': scrape.name,
-        'sheet_id': scrape.id
+        'scrape_id': scrape.id
     }
     Channel('scrape_wiley_by_sheet_name').send(name)
     return redirect('scraper:show', scrape_id=scrape.id)
 
 def show(request, scrape_id):
-    pu.db
-    return HttpResponse('hello')
+    scrape = get_object_or_404(Scrape, pk=scrape_id)
+    context = { 
+        'scrape': scrape 
+    }
+    return render(request, 'show.html', context)

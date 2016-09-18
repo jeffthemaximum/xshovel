@@ -4,15 +4,11 @@ import logging
 from channels import Group
 from channels.sessions import channel_session
 from .models import Room
+from scraper.models import Scrape
 
 log = logging.getLogger(__name__)
 
-@channel_session
-def ws_connect(message):
-    # Extract the room from the message. This expects message.path to be of the
-    # form /chat/{label}/, and finds a Room if the message path is applicable,
-    # and if the Room exists. Otherwise, bails (meaning this is a some othersort
-    # of websocket). So, this is effectively a version of _get_object_or_404.
+def connect_chat(message):
     try:
         prefix, label = message['path'].decode('ascii').strip('/').split('/')
         if prefix != 'chat':
@@ -34,6 +30,40 @@ def ws_connect(message):
     Group('chat-'+label, channel_layer=message.channel_layer).add(message.reply_channel)
 
     message.channel_session['room'] = room.label
+
+def connect_scraper(message):
+    try:
+        prefix, action, id = message['path'].decode('ascii').strip('/').split('/')
+        if prefix != 'scraper':
+            log.debug('invalid ws path=%s', message['path'])
+            return
+        scrape = Scrape.objects.get(pk=id)
+    except ValueError:
+        log.debug('invalid ws path=%s', message['path'])
+        return
+    except Scrape.DoesNotExist:
+        log.debug('scrape does not exist id=%s', id)
+        return
+
+    log.debug('scrape connect name=%s client=%s:%s', scrape.name, message['client'][0], message['client'][1])
+
+    Group('scraper-'+id, channel_layer=message.channel_layer).add(message.reply_channel)
+
+    message.channel_session['scrape_id'] = scrape.id
+
+@channel_session
+def ws_connect(message):
+    # Extract the room from the message. This expects message.path to be of the
+    # form /chat/{label}/, and finds a Room if the message path is applicable,
+    # and if the Room exists. Otherwise, bails (meaning this is a some othersort
+    # of websocket). So, this is effectively a version of _get_object_or_404.
+    path = message['path'].decode('ascii').strip('/').split('/')
+    if len(path) is 2:
+        connect_chat(message)
+    elif len(path) is 3:
+        connect_scraper(message)
+    else:
+        log.debug('Failed in ws_connect')
 
 @channel_session
 def ws_receive(message):
