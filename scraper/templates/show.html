@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% load staticfiles %}
+  <h1>Everyday we scrapiling!</h1>
+  <h3>{{ scrape.name }}</h3>
+  <p class="quiet">
+    Scraper is scraping!
+    Anyone can monitor the output at this URL: 
+    <code>{{ request.scheme }}://{{ request.get_host }}/scraper/show/{{ scrape.id }}/</code> 
+  </p>
+  <table id="chat">
+    <tbody>
+      {% for message in messages %}
+        <tr>
+          <td>{{ message.formatted_timestamp }}</td>
+          <td>{{ message.message }}</td>
+        </tr> 
+      {% endfor %}
+    </tbody>
+  </table>
+  
+{% endblock content %}
+
+{% block afterbody %}
+  <script type="text/javascript" src='{% static "jquery-1.12.1.min.js" %}'></script>
+  <script type="text/javascript" src='{% static "reconnecting-websocket.min.js" %}'></script>
+  <script type="text/javascript" src='{% static "scraper.js" %}'></script>
+{% endblock afterbody %}
