@@ -16,4 +16,8 @@ def new(request):
         'sheet_id': scrape.id
     }
     Channel('scrape_wiley_by_sheet_name').send(name)
+    return redirect('scraper:show', id=scrape.id)
+
+def show(request, id):
+
     return HttpResponse('hello')
