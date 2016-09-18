@@ -8,4 +8,4 @@ class Scrape(models.Model):
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
 
     def __unicode__(self):
-        return self.label
+        return self.name
