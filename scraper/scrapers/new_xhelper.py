@@ -14,10 +14,41 @@ scrape_id = None
 message = None
 
 class Scraper:
-    def __init__(self, url, kind = None):
+    def __init__(self, url, kind = None, json = False):
         self.url = url
         self.kind = kind
-        self.soup = self.cook_soup(self.url)
+        if json is True:
+            self.json = self.get_json(self.url)
+        else:
+            self.soup = self.cook_soup(self.url)
+        
+    def get_json(self, link):
+        if self.kind == "plos":
+            cookies = {
+                '__gads': 'ID=184c418340fce1da:T=1471832486:S=ALNI_Mafy12txJwM8Ammx0YcAeaMtqiwOQ',
+                'JSESSIONID': 'A6B41E4126BB2EFE4837336FA088C3A3',
+                '_gat_UA-76325259-3': '1',
+                '_gat_journalsMaster': '1',
+                '_gat_master': '1',
+                '_ga': 'GA1.3.1853032522.1471832485',
+                'plos-device-detected': 'desktop',
+            }
+
+            headers = {
+                'Pragma': 'no-cache',
+                'Accept-Encoding': 'gzip, deflate, sdch',
+                'Accept-Language': 'en-US,en;q=0.8',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36',
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Referer': 'http://journals.plos.org/plosone/search?filterStartDate=2015-01-01&filterEndDate=2016-08-10&resultsPerPage=6000&q=amphibian&page=1',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Connection': 'keep-alive',
+                'Cache-Control': 'no-cache',
+            }
+
+        response = requests.get(self.url, headers=headers, cookies=cookies)
+        response = json.loads(response.text)
+        return response
         
 
     def cook_soup(self, link):
@@ -169,6 +200,12 @@ class Helpers:
         last_col_letter = Helpers.get_last_col_letter(sheet)
         num_rows = len(list_of_strs)
         range_string = Helpers.build_range_string(last_col_letter, num_rows)
+        cell_list = sheet.range(range_string)
+        return cell_list
+
+    @classmethod
+    def get_cell_list_for_plos(cls, sheet, col_letter, len_of_list):
+        range_string = Helpers.build_range_string(col_letter, len_of_list)
         cell_list = sheet.range(range_string)
         return cell_list
 
