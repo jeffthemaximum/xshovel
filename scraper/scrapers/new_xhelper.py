@@ -14,23 +14,75 @@ scrape_id = None
 message = None
 
 class Scraper:
-    def __init__(self, url):
+    def __init__(self, url, kind = None):
         self.url = url
+        self.kind = kind
         self.soup = self.cook_soup(self.url)
+        
 
     def cook_soup(self, link):
         """
         takes a link as a string
         returns a bs soup object
         """
-        try:
-            response = requests.get(self.url)
+
+        if self.kind == 'scidi':
+            cookies = {
+                'EUID': '88675d40-7e7a-11e6-9d38-00000aab0f27',
+                'sd_scs': '8875a044-7e7a-11e6-9d38-00000aab0f27',
+                'sid': '14e8aaf7-e962-4f64-9891-68c61458e0bc',
+                'optimizelyEndUserId': 'oeu1474297543594r0.4892093811861049',
+                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17064%7CMCMID%7C87522486594869997002263906783116549148%7CMCAAMLH-1474902344%7C7%7CMCAAMB-1474902344%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
+                '__gads': 'ID=c224b0a47aed5ddb:T=1474297545:S=ALNI_MYEPpmrSGEgr4KbFcO21T-H3YxKWQ',
+                'USER_STATE_COOKIE': '346fa8c434beaa188373c1181c0ae9a6f9ea30ce9036ed5abadf1cb3e580fb2d',
+                'CARS_COOKIE': '6b8b76378462b78a5aec22ed3c768082499c572e082b9dbc8693fcc96bf3c01cca64374c56e6d68f8483e11b4b6f1f8e7f9d137ac8264f90',
+                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cb1468c63e712961e8908ef471ab6177d378e78873d526a2',
+                'fingerPrintToken': '14239b7afb1d7eb851e5ae9aeb6b5c9c',
+                '__cp': '1474299720557',
+                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22direct%22%2C%22204775011%22%3A%22gc%22%7D',
+                's_pers': '%20v8%3D1474299720762%7C1568907720762%3B%20v8_s%3DFirst%2520Visit%7C1474301520762%3B%20c19%3Dsd%253Aproduct%253Ajournal%253Aarticle%7C1474301520768%3B%20v68%3D1474299720280%7C1474301520778%3B',
+                's_cc': 'true',
+                'optimizelyBuckets': '%7B%7D',
+                'MIAMISESSION': '88607962-7e7a-11e6-9d38-00000aab0f27:3651752521',
+                'DEFAULT_SESSION_SUBJECT': '',
+                's_sess': '%20v31%3D1474297543729%3B%20s_cpc%3D0%3B%20e41%3D1%3B%20s_ppvl%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C45%252C45%252C826%252C458%252C826%252C1440%252C900%252C2%252CL%3B%20s_ppv%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C45%252C45%252C826%252C458%252C826%252C1440%252C900%252C2%252CL%3B',
+            }
+
+            headers = {
+                'Pragma': 'no-cache',
+                'Accept-Encoding': 'gzip, deflate, sdch',
+                'Accept-Language': 'en-US,en;q=0.8',
+                'Upgrade-Insecure-Requests': '1',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+            }
+
+            response = requests.get(self.url, headers=headers, cookies=cookies)
             return bs4.BeautifulSoup(response.text)
-        except requests.exceptions.MissingSchema:
-            return ''
+        else:
+            try:
+                response = requests.get(self.url)
+                return bs4.BeautifulSoup(response.text)
+            except requests.exceptions.MissingSchema:
+                return ''
 
 
 class Helpers:
+
+    @classmethod
+    def get_cell_string(cls, col_letter, idx, offset=0):
+        '''
+        takes a col_letter like 'B'
+        an idx in a list, like 5
+        and an option offset like 1, which corresponds to the header of a sheet
+        and returns a string like 'B7'
+        7 because the list is zero indexed
+        and the sheet is 1-indexed
+        '''
+        row = idx + offset + 1
+        return col_letter + str(row)
 
     @classmethod
     def get_all_column_vals_as_row(cls, sheet, col_num):
@@ -68,14 +120,14 @@ class Helpers:
         return counter
 
     @classmethod
-    def get_col_letter_from_number(cls, col_num):
+    def get_col_letter_from_number(cls, col_num, fixer = 1):
         '''
         takes a number, like 3
         and returns the column letter
         like D
         assumes zero indexed number
         '''
-        return chr(ord('A') + col_num + 1)
+        return chr(ord('A') + col_num + fixer)
 
     @classmethod
     def build_range_string(cls, col_letter, num_rows):
