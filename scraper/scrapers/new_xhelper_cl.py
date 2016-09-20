@@ -103,6 +103,18 @@ class Scraper:
 class Helpers:
 
     @classmethod
+    def find_sheet_from_spread_sheet(cls, spread_sheet, sheet_name):
+        try:
+            sheet_name = sheet_name.lower()
+            for sheet in spread_sheet.worksheets():
+                if sheet_name in sheet.title.lower():
+                    return sheet
+            return False
+        except Exception as e:
+            print e.message
+            return False
+
+    @classmethod
     def get_cell_string(cls, col_letter, idx, offset=0):
         '''
         takes a col_letter like 'B'
@@ -506,7 +518,7 @@ def main(sheet_name):
         return False
 
 if __name__ == '__main__':
-    
+
     sheet_name = raw_input("whatchur Google SpreadSheet name? ")
     print("This is the email address you have to share that sheet with: ")
     print("123114053576-compute@developer.gserviceaccount.com")
