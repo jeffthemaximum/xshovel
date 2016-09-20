@@ -4,6 +4,7 @@ import os
 import requests
 import urllib
 import pudb
+import datetime
 
 class Plos:
     def __init__(self, xhelper, sheet, search, search_url):
@@ -188,17 +189,27 @@ class Plos:
         self.sheet.sheet.update_cells(name_cell_list)
 
 def main(search = None, spread_sheet_name = None):
-    search = "amphibians"
+    # search = "amphibians"
     spread_sheet_name = "Copy of Herpetology abstracts"
+
+    now = datetime.datetime.now()
+
+    start_year = raw_input("What's the beginning year of yer search? ")
+    start_month = raw_input("What's the beginning month of yer search? Use two digit format, such as 08. ")
+    end_year = str(now.year)
+    end_month = str(now.month) if len(str(now.month)) == 2 else "0" + str(now.month)
+    end_day = str(now.day) if len(str(now.day)) == 2 else "0" + str(now.day)
+    per_page = raw_input("How many results you want? ")
+    search = raw_input("What do you want to search for? ")
+
     plos_sheet_name = "plos " + search
 
-    url_1 = "http://journals.plos.org/plosone/dynamicSearch?filterStartDate=2015-01-01&filterEndDate=2016-08-10&resultsPerPage=100&q="
-    url_2 = "&page=1"
+    url = "http://journals.plos.org/plosone/dynamicSearch?filterStartDate={0}-{1}-01&filterEndDate={2}-{3}-{4}&resultsPerPage={5}&q={6}&page=1"
 
     if " " in search:
         search = "+".join(search.split(" "))
 
-    url = url_1 + search + url_2
+    url = url.format(start_year, start_month, end_year, end_month, end_day, per_page, search)
 
     print url
 
