@@ -188,9 +188,8 @@ class Plos:
 
         self.sheet.sheet.update_cells(name_cell_list)
 
-def main(search = None, spread_sheet_name = None):
+def main(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
     # search = "amphibians"
-    spread_sheet_name = "Copy of Herpetology abstracts"
 
     now = datetime.datetime.now()
 
@@ -227,4 +226,13 @@ def main(search = None, spread_sheet_name = None):
     plos.run()
 
 if __name__ == '__main__':
-    main()
+    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
+    print("This is the email address you have to share that sheet with: ")
+    print("123114053576-compute@developer.gserviceaccount.com")
+    sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+    while sheet_share_confirm != "y" and sheet_share_confirm != "n":
+        sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
+    if sheet_share_confirm == "y":
+        main(spread_sheet_name = sheet_name)
+    else:
+        print("well go do that then")

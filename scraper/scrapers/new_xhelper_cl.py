@@ -506,5 +506,14 @@ def main(sheet_name):
         return False
 
 if __name__ == '__main__':
+    
     sheet_name = raw_input("whatchur Google SpreadSheet name? ")
-    main(sheet_name)
+    print("This is the email address you have to share that sheet with: ")
+    print("123114053576-compute@developer.gserviceaccount.com")
+    sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+    while sheet_share_confirm != "y" and sheet_share_confirm != "n":
+        sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
+    if sheet_share_confirm == "y":
+        main(sheet_name)
+    else:
+        print("well go do that then")
