@@ -26,6 +26,59 @@ class Plos:
         self.title_col_num = 2
         self.all_titles = self.init_titles()
 
+        self.all_soups = self.get_all_soups()
+
+        self.email_col_num = 3
+        self.all_emails = self.get_emails()
+
+        self.name_col_num = 4
+        self.all_names = self.get_names()
+
+    def get_all_soups(self):
+        soups = []
+        for url in self.all_urls:
+            print url
+            scraper = Scraper(url)
+            soups.append(scraper)
+        return soups
+
+        # return [Scraper(url) for url in self.all_urls]
+
+    def get_names(self):
+        names = []
+        for i, url in enumerate(self.all_urls):
+            try:
+                soup = self.all_soups[i].soup
+                email_el = soup.find("span", {"class": "email"})
+                name = email_el.parent.text.strip()
+                first_name = name.split(" ")[0]
+
+                # if first name is initial, try to get middle name
+                if list(first_name)[-1] == ".":
+                    if len(name.split(" ")) > 2:
+                        first_name = name.split(" ")[1]
+                print first_name
+            except:
+                
+                first_name = ""
+            names.append(first_name)
+        return names
+
+
+    def get_emails(self):
+        emails = []
+        for i, url in enumerate(self.all_urls):
+            try:
+                soup = self.all_soups[i].soup
+                email_el = soup.find("span", {"class": "email"}).findNext("a")
+                email = email_el["href"].split(":")[1]
+                print email
+            except:
+                
+                email = ""
+            emails.append(email)
+        return emails
+
     def init_urls(self):
         base = "http://journals.plos.org"
         urls = []
@@ -65,7 +118,7 @@ class Plos:
         return titles
 
 
-    def run(self, url_col_name = "pageUrl", title_col_name = "title", abstract_col_name = "abstract"):
+    def run(self, url_col_name = "pageUrl", title_col_name = "title", abstract_col_name = "abstract", email_col_name = "email", name_col_name = "name"):
         # write urls to Sheet
 
         # 1 - print pageUrl at top of col
@@ -108,14 +161,38 @@ class Plos:
 
         self.sheet.sheet.update_cells(abstract_cell_list)
 
-        print ("YAY" * 10000)
+        # emails
+        email_col_letter = Helpers.get_col_letter_from_number(self.email_col_num, fixer = 0)
+        email_col_header_cell_str = Helpers.get_cell_string(email_col_letter, 0)
+
+        self.sheet.sheet.update_acell(email_col_header_cell_str, email_col_name)
+        
+        email_cell_list = Helpers.get_cell_list_for_plos(self.sheet.sheet, email_col_letter, len(self.all_emails))
+
+        for i, cell in enumerate(self.all_emails):
+            email_cell_list[i].value = self.all_emails[i]
+
+        self.sheet.sheet.update_cells(email_cell_list)
+
+        # names
+        name_col_letter = Helpers.get_col_letter_from_number(self.name_col_num, fixer = 0)
+        name_col_header_cell_str = Helpers.get_cell_string(name_col_letter, 0)
+
+        self.sheet.sheet.update_acell(name_col_header_cell_str, name_col_name)
+
+        name_cell_list = Helpers.get_cell_list_for_plos(self.sheet.sheet, name_col_letter, len(self.all_names))
+
+        for i, cell in enumerate(self.all_names):
+            name_cell_list[i].value = self.all_names[i]
+
+        self.sheet.sheet.update_cells(name_cell_list)
 
 def main(search = None, spread_sheet_name = None):
     search = "amphibians"
     spread_sheet_name = "Copy of Herpetology abstracts"
     plos_sheet_name = "plos " + search
 
-    url_1 = "http://journals.plos.org/plosone/dynamicSearch?filterStartDate=2015-01-01&filterEndDate=2016-08-10&resultsPerPage=6000&q="
+    url_1 = "http://journals.plos.org/plosone/dynamicSearch?filterStartDate=2015-01-01&filterEndDate=2016-08-10&resultsPerPage=100&q="
     url_2 = "&page=1"
 
     if " " in search:
