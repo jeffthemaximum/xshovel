@@ -95,17 +95,22 @@ class SciDi:
     def scrape_abstract(self, soup):
         # abstract_div = soup.find("div", {"class": "abstract"})
         # abstract_div_children = abstract_div.findChildren()
-
-        abstract_nav_str = soup.find(text="Abstract")
-        abstract_element = abstract_nav_str.parent.findNext("p")
-        text = abstract_element.get_text()
-        print text
-        return text
+        try:
+            abstract_nav_str = soup.find(text="Abstract")
+            abstract_element = abstract_nav_str.parent.findNext("p")
+            text = abstract_element.get_text()
+            print text
+            return text
+        except:
+            return ""
 
 
     def scrape_author(self, soup):
-        author = soup.find("a", {"class": "authorName"})
-        return author.text
+        try:
+            author = soup.find("a", {"class": "authorName"})
+            return author.text
+        except:
+            return ""
 
     def scrape_email(self, soup):
         try:
