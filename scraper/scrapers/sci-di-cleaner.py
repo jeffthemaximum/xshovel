@@ -56,7 +56,7 @@ class SciDi:
                 author = self.scrape_author(soup)
 
                 if author == "":
-                    author = scrape_author_name_link(soup)
+                    author = self.scrape_author_name_link(soup)
                 # write author back to sheet
                 # 1 - get cell str
                 col_letter = Helpers.get_col_letter_from_number(self.author_col_num, fixer=0)
