@@ -102,6 +102,8 @@ class SciDi:
             abstract_element = abstract_nav_str.parent.findNext("p")
             text = abstract_element.get_text()
             print text
+            if len(text) < 50:
+                text = abstract_nav_str.find_next('div').text
             return text
         except:
             return ""
