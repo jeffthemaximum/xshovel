@@ -51,6 +51,7 @@ class SciDi:
         # find author if missing
         for idx, author in enumerate(self.all_authors):
             if author == "":
+                pu.db
 
                 soup = self.get_or_find_soup(idx)
                 author = self.scrape_author(soup)
@@ -117,14 +118,11 @@ class SciDi:
 
     def scrape_author_name_link(self, soup):
         # get email
-        try:
-            email = soup.find("a", {"class": "auth_mail"})
-        except:
-            try:
-                email = soup.find("a", {"class": "author-email"})
-            except:
-                # cant find email
-                email = ""
+        email = soup.find("a", {"class": "auth_mail"})
+        if email is None:
+            email = soup.find("a", {"class": "author-email"})
+        if email is None:
+            author = ""
 
         # after finding email, find author name that's nearest to email
         try:
