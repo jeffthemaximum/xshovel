@@ -110,13 +110,21 @@ class SciDi:
             author = soup.find("a", {"class": "authorName"})
             return author.text
         except:
-            return ""
+            try:
+                author = soup.find("a", {"class": "author-name-link"}).text
+                return author.strip()
+            except:
+                author = ""
+        return ""
 
     def scrape_email(self, soup):
         try:
             email = soup.find("a", {"class": "auth_mail"})['href'].split(':')[1]
         except:
-            email = ""
+            try:
+                email = soup.find("a", {"class": "author-email"})['href'].split(':')[1]
+            except:
+                email = ""
         return email
 
 if __name__ == '__main__':
