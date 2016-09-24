@@ -35,21 +35,6 @@ class SciDi:
         print "done scidi init"
 
     def run(self):
-        # find author if missing
-        for idx, author in enumerate(self.all_authors):
-            if author == "":
-
-                soup = self.get_or_find_soup(idx)
-                author = self.scrape_author(soup)
-                # write author back to sheet
-                # 1 - get cell str
-                col_letter = Helpers.get_col_letter_from_number(self.author_col_num, fixer=0)
-                cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
-                # 2 - write to sheet
-                self.sheet.sheet.update_acell(cell_str, author)
-                # 3 - write author back to list of authors
-                self.all_authors[idx] = author
-
         # find email if missing
         for idx, email in enumerate(self.all_emails):
             if email == "":
@@ -62,6 +47,24 @@ class SciDi:
                 self.sheet.sheet.update_acell(cell_str, email)
 
                 self.all_emails[idx] = email
+
+        # find author if missing
+        for idx, author in enumerate(self.all_authors):
+            if author == "":
+
+                soup = self.get_or_find_soup(idx)
+                author = self.scrape_author(soup)
+
+                if author == "":
+                    author = scrape_author_name_link(soup)
+                # write author back to sheet
+                # 1 - get cell str
+                col_letter = Helpers.get_col_letter_from_number(self.author_col_num, fixer=0)
+                cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
+                # 2 - write to sheet
+                self.sheet.sheet.update_acell(cell_str, author)
+                # 3 - write author back to list of authors
+                self.all_authors[idx] = author
 
         # find abstract if missing
         for idx, abstract in enumerate(self.all_abstracts):
@@ -110,12 +113,30 @@ class SciDi:
             author = soup.find("a", {"class": "authorName"})
             return author.text
         except:
+            return ""
+
+    def scrape_author_name_link(self, soup):
+        # get email
+        try:
+            email = soup.find("a", {"class": "auth_mail"})
+        except:
             try:
-                author = soup.find("a", {"class": "author-name-link"}).text
-                return author.strip()
+                email = soup.find("a", {"class": "author-email"})
+            except:
+                # cant find email
+                email = ""
+
+        # after finding email, find author name that's nearest to email
+        try:
+            author = email.parent.find("a", {"class": "author-name-link"}).text
+
+        except:
+            try:
+                 author = email.parent.find("a", {"class": "authorName"}).text
             except:
                 author = ""
-        return ""
+
+        return author.strip()
 
     def scrape_email(self, soup):
         try:
