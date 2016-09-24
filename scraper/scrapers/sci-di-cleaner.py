@@ -51,8 +51,6 @@ class SciDi:
         # find author if missing
         for idx, author in enumerate(self.all_authors):
             if author == "":
-                pu.db
-
                 soup = self.get_or_find_soup(idx)
                 author = self.scrape_author(soup)
 
