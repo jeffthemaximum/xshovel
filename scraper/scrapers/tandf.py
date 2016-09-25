@@ -5,6 +5,8 @@ import pudb
 from datetime import datetime
 from operator import itemgetter
 
+from scraper.models import Journal, Author, Article
+
 BASE_URL = 'http://www.tandfonline.com'
 
 def base_url_plus_stub(stub):
@@ -69,8 +71,6 @@ for div in topic_divs:
 for tl in topic_links:
     print tl
 
-raw_input()
-
 # go to topic link pages and
 for topic_link in topic_links:
     
@@ -106,6 +106,32 @@ for topic_link in topic_links:
                 print (article_title, article_link, article_date, journal_name, journal_link, article_type, author_name, author_email)
                 p_idx = str(idx) + " "
                 print p_idx * 10
+
+                # save journal
+                journal, created = Journal.objects.get_or_create(name = journal_name)
+                if created:
+                    journal.link = journal_link
+                    journal.save()
+
+                # save author 
+                if author_email != "":
+                    author, created = Author.objects.get_or_create(email = author_email)
+                    if created:
+                        author.name = author_name
+                        author.save()
+
+                    # save article 
+                    try:
+                        article = Article.objects.get(link = article_link, title = article_title)
+                    except Article.DoesNotExist:
+                        article = Article.objects.create(
+                            link = article_link, 
+                            title = article_title,
+                            date = article_date.strftime('%Y-%m-%d'),
+                            author = author,
+                            journal = journal
+                        )
+                    
             except:
                 print "BRICKED " * 10
                 print article_link

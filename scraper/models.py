@@ -20,8 +20,8 @@ class Author(models.Model):
 
 class Article(models.Model):
     title = models.TextField()
-    link = models.URLField()
-    date = models.DateTimeField()
-    author = models.ForeignKey(author)
-    journal = models.ForeignKey(journal)
+    link = models.URLField(unique=True)
+    date = models.DateTimeField(null=True, blank=True, default=None)
+    author = models.ForeignKey(Author)
+    journal = models.ForeignKey(Journal)
 
