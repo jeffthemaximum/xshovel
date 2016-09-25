@@ -9,3 +9,19 @@ class Scrape(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class Journal(models.Model):
+    name = models.TextField(unique=True)
+    link = models.URLField()
+
+class Author(models.Model):
+    name = models.CharField(max_length=300)
+    email = models.EmailField(unique=True)
+
+class Article(models.Model):
+    title = models.TextField()
+    link = models.URLField()
+    date = models.DateTimeField()
+    author = models.ForeignKey(author)
+    journal = models.ForeignKey(journal)
+
