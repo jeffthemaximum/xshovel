@@ -25,3 +25,7 @@ class Article(models.Model):
     author = models.ForeignKey(Author)
     journal = models.ForeignKey(Journal)
 
+class Brick(models.Model):
+    url = models.URLField(unique=True)
+    site = models.CharField(max_length=140)
+    timestamp = models.DateTimeField(default=timezone.now, db_index=True) 
