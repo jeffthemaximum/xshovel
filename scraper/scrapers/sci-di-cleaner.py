@@ -12,7 +12,7 @@ class SciDi:
         self.sheet = Sheet(self.xhelper, sheet)
         print 'got sheet'
         # Group('scraper-'+str(self.scrape_id), channel_layer=self.message.channel_layer).send({'text': 'got sheet'})
-        
+
         self.author_col_num = Helpers.get_column_number(self.sheet, 'author')
         self.all_authors = Helpers.get_all_column_vals_as_row(self.sheet, self.author_col_num)
         print self.all_authors
@@ -20,7 +20,7 @@ class SciDi:
         self.email_col_num = Helpers.get_column_number(self.sheet, 'email')
         self.all_emails = Helpers.get_all_column_vals_as_row(self.sheet, self.email_col_num)
         print self.all_emails
-        
+
         self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
         self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
         self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
@@ -28,7 +28,10 @@ class SciDi:
 
         self.abstract_col_num = Helpers.get_column_number(self.sheet, 'abstract')
         self.all_abstracts = Helpers.get_all_column_vals_as_row(self.sheet,self.abstract_col_num)
-        
+
+        self.title_col_num = Helpers.get_column_number(self.sheet, 'title')
+        self.all_titles = Helpers.get_all_column_vals_as_row(self.sheet,self.title_col_num)
+
         self.all_soups = [None] * len(self.all_urls)
         # self.found_first_names = [None] * len(self.all_emails)
         # self.found_emails = [None] * len(self.all_emails)
@@ -75,8 +78,21 @@ class SciDi:
                 self.sheet.sheet.update_acell(cell_str, abstract)
 
                 self.all_abstracts[idx] = abstract
-        
-    
+
+        # find title if missing
+        for idx, title in enumerate(self.all_titles):
+            if title == "":
+                soup = self.get_or_find_soup(idx)
+                title = self.scrape_title(soup)
+
+                col_letter = Helpers.get_col_letter_from_number(self.title_col_num, fixer=0)
+                cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
+
+                self.sheet.sheet.update_acell(cell_str, title)
+
+                self.all_titles[idx] = title
+
+
     def get_or_find_soup(self, idx):
         if self.all_soups[idx] is None:
             # find author
@@ -97,8 +113,16 @@ class SciDi:
         # abstract_div_children = abstract_div.findChildren()
 
         abstract_nav_str = soup.find(text="Abstract")
-        abstract_element = abstract_nav_str.parent.findNext("p")
-        text = abstract_element.get_text()
+        if abstract_nav_str:
+            abstract_element = abstract_nav_str.parent.findNext("p")
+            text = abstract_element.get_text()
+            print text
+            return text
+
+    def scrape_title(self, soup):
+
+        title_str = soup.find("h1", {"class": "svTitle"})
+        text = title_str.get_text()
         print text
         return text
 
@@ -136,11 +160,7 @@ if __name__ == '__main__':
                 print sheet.title
                 sci_di = SciDi(xhelper = xhelper, sheet = sheet)
                 sci_di.run()
-    
+
     else:
         print "Well go do that then"
 
-
-    
-
-    
