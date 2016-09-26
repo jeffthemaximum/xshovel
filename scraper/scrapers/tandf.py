@@ -80,7 +80,7 @@ for j, topic_link in enumerate(topic_links):
 
     start = 0
     if j == 0:
-        start = 1054
+        start = 1935
     
     for idx in range(start, topic_link[2]):
 
@@ -144,7 +144,37 @@ for j, topic_link in enumerate(topic_links):
                 print "BRICKED " * 10
                 print article_link
 
-
+# (u'Area Studies', 'http://www.tandfonline.com/topic/4251', 6976)
+# (u'Arts', 'http://www.tandfonline.com/topic/4250', 4080)
+# (u'Behavioral Sciences', 'http://www.tandfonline.com/topic/4252', 12470)
+# (u'Bioscience', 'http://www.tandfonline.com/topic/4253', 15117)
+# (u'Built Environment', 'http://www.tandfonline.com/topic/4254', 3320)
+# (u'Communication Studies', 'http://www.tandfonline.com/topic/4256', 2171)
+# (u'Computer Science', 'http://www.tandfonline.com/topic/4255', 3842)
+# (u'Development Studies', 'http://www.tandfonline.com/topic/4257', 3412)
+# (u'Earth Sciences', 'http://www.tandfonline.com/topic/4258', 6429)
+# (u'Economics, Finance, Business & Industry', 'http://www.tandfonline.com/topic/4259', 13503)
+# (u'Education', 'http://www.tandfonline.com/topic/4261', 15388)
+# (u'Engineering & Technology', 'http://www.tandfonline.com/topic/4260', 20060)
+# (u'Environment & Agriculture', 'http://www.tandfonline.com/topic/4248', 14561)
+# (u'Environment and Sustainability', 'http://www.tandfonline.com/topic/4262', 7045)
+# (u'Food Science & Technology', 'http://www.tandfonline.com/topic/4263', 2749)
+# (u'Geography', 'http://www.tandfonline.com/topic/4264', 7626)
+# (u'Health and Social Care', 'http://www.tandfonline.com/topic/4266', 7588)
+# (u'Humanities', 'http://www.tandfonline.com/topic/4267', 15590)
+# (u'Information Science', 'http://www.tandfonline.com/topic/4268', 2158)
+# (u'Language & Literature', 'http://www.tandfonline.com/topic/4269', 5395)
+# (u'Law', 'http://www.tandfonline.com/topic/4270', 1692)
+# (u'Mathematics & Statistics', 'http://www.tandfonline.com/topic/4271', 9059)
+# (u'Medicine, Dentistry, Nursing & Allied Health', 'http://www.tandfonline.com/topic/4272', 24867)
+# (u'Museum and Heritage Studies', 'http://www.tandfonline.com/topic/4249', 1263)
+# (u'Physical Sciences', 'http://www.tandfonline.com/topic/4273', 19203)
+# (u'Politics & International Relations', 'http://www.tandfonline.com/topic/4274', 10937)
+# (u'Social Sciences', 'http://www.tandfonline.com/topic/4278', 11016)
+# (u'Sports and Leisure', 'http://www.tandfonline.com/topic/4277', 3158)
+# (u'Tourism, Hospitality and Events', 'http://www.tandfonline.com/topic/4279', 690)
+# (u'Urban Studies', 'http://www.tandfonline.com/topic/4280', 1911)
+# 253276
 
     
 
