@@ -3,13 +3,22 @@ import string
 from django.db import transaction
 from django.shortcuts import render, redirect
 from scraper.forms import sheetNameForm
+from scraper.models import Journal, Author, Article
 import haikunator
 from .models import Room
 import pudb
 
 def about(request):
     form = sheetNameForm()
-    return render(request, "chat/about.html", {'form': form})
+    article_count = Article.objects.count()
+    author_count = Author.objects.count()
+    journal_count = Journal.objects.count()
+    return render(request, "chat/about.html", {
+        'form': form,
+        'author_count': author_count,
+        'article_count': article_count,
+        'journal_count': journal_count
+        })
 
 def new_room(request):
     """
