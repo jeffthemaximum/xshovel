@@ -32,6 +32,12 @@ class SciDi:
         self.title_col_num = Helpers.get_column_number(self.sheet, 'title')
         self.all_titles = Helpers.get_all_column_vals_as_row(self.sheet,self.title_col_num)
 
+        self.affil_col_num = Helpers.get_column_number(self.sheet, 'affiliation')
+        self.all_affils = Helpers.get_all_column_vals_as_row(self.sheet,self.affil_col_num)
+
+        self.journal_col_num = Helpers.get_column_number(self.sheet, 'journal')
+        self.all_journals = Helpers.get_all_column_vals_as_row(self.sheet,self.journal_col_num)
+
         self.all_soups = [None] * len(self.all_urls)
         # self.found_first_names = [None] * len(self.all_emails)
         # self.found_emails = [None] * len(self.all_emails)
@@ -92,6 +98,32 @@ class SciDi:
 
                 self.all_titles[idx] = title
 
+        # find affiliation if missing
+        for idx, affil in enumerate(self.all_affils):
+            if affil == "":
+                soup = self.get_or_find_soup(idx)
+                affil = self.scrape_affil(soup)
+
+                col_letter = Helpers.get_col_letter_from_number(self.affil_col_num, fixer=0)
+                cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
+
+                self.sheet.sheet.update_acell(cell_str, affil)
+
+                self.all_affils[idx] = affil
+
+        # find journal if missing
+        for idx, journal in enumerate(self.all_journals):
+            if journal == "":
+                soup = self.get_or_find_soup(idx)
+                journal = self.scrape_journal(soup)
+
+                col_letter = Helpers.get_col_letter_from_number(self.journal_col_num, fixer=0)
+                cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
+
+                self.sheet.sheet.update_acell(cell_str, journal)
+
+                self.all_journals[idx] = journal
+
 
     def get_or_find_soup(self, idx):
         if self.all_soups[idx] is None:
@@ -113,23 +145,46 @@ class SciDi:
         # abstract_div_children = abstract_div.findChildren()
 
         abstract_nav_str = soup.find(text="Abstract")
+        abstract_nav_other = soup.find("div", {"class":"abstract"})
         if abstract_nav_str:
             abstract_element = abstract_nav_str.parent.findNext("p")
             text = abstract_element.get_text()
             print text
             return text
+        elif abstract_nav_other:
+            abstract_element = abstract_nav_other.findNext("p")
+            text = abstract_element.get_text()
+            print text
+            return text
 
     def scrape_title(self, soup):
-
         title_str = soup.find("h1", {"class": "svTitle"})
-        text = title_str.get_text()
-        print text
-        return text
+        if title_str:
+            text = title_str.get_text()
+            print text
+            return text
 
 
     def scrape_author(self, soup):
         author = soup.find("a", {"class": "authorName"})
-        return author.text
+        if author:
+            return author.text
+
+    def scrape_journal(self, soup):
+        journal_str = soup.find("div", {"class":"title"})
+        journal_name = journal_str.findNext("span")
+        text = journal_name.get_text()
+        print text
+        return text
+
+    def scrape_affil(self, soup):
+        affils = soup.find("ul", {"class":"affiliation"})
+        if affils:
+            inst = affils.findNext("li")
+            inst = affils.findNext("span")
+            text = inst.get_text()
+            print text
+            return text
 
     def scrape_email(self, soup):
         try:

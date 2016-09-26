@@ -17,11 +17,16 @@ class Scraper:
         returns a bs soup object
         """
         try:
-            response = requests.get(self.url)
+            response = requests.get(self.url, timeout=.01)
             return bs4.BeautifulSoup(response.text)
+        except requests.exceptions.timeout:
+            print "failed"
+            return ''
+        except requests.exceptions.ReadTimeout:
+            print "failed"
+            return ''
         except requests.exceptions.MissingSchema:
             return ''
-
 
 class Helpers:
 

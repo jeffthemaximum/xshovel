@@ -89,13 +89,22 @@ class Scraper:
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
             }
+            try:
+                response = requests.get(self.url, headers=headers, cookies=cookies, timeout=1)
+                return bs4.BeautifulSoup(response.text)
+            except requests.exceptions.ReadTimeout:
+                print "failed, retrying"
+                return self.cook_soup(link)
+            except requests.exceptions.MissingSchema:
+                return ''
 
-            response = requests.get(self.url, headers=headers, cookies=cookies)
-            return bs4.BeautifulSoup(response.text)
         else:
             try:
-                response = requests.get(self.url)
+                response = requests.get(self.url, timeout=1)
                 return bs4.BeautifulSoup(response.text)
+            except requests.exceptions.ReadTimeout:
+                print "failed, retrying"
+                return self.cook_soup(link)
             except requests.exceptions.MissingSchema:
                 return ''
 
