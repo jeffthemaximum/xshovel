@@ -68,13 +68,21 @@ for div in topic_divs:
         correct_num_list = min(multi_hit, key=itemgetter(2))
         topic_links.append(correct_num_list)
 
+total = 0
 for tl in topic_links:
+    total += tl[2]
     print tl
 
+print total
+
 # go to topic link pages and
-for topic_link in topic_links:
+for j, topic_link in enumerate(topic_links):
+
+    start = 0
+    if j == 0:
+        start = 1054
     
-    for idx in range(0, topic_link[2]):
+    for idx in range(start, topic_link[2]):
 
         link = topic_link[1] + '?target=topic&pageSize=20&subjectTitle=&startPage=' + str(idx)
 
