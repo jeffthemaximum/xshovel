@@ -1,11 +1,27 @@
 import requests
 import bs4
 import pudb
+import os
+import urllib
 
 from datetime import datetime
 from operator import itemgetter
 
-from scraper.models import Journal, Author, Article, Brick
+if __name__ != '__main__':
+    from scraper.models import Journal, Author, Article, Brick
+
+class TandfGsheet:
+    def __init__(self, xhelper, sheet):
+        pu.db
+        from new_xhelper import Sheet, Scraper, Helpers
+
+        self.xhelper = xhelper
+        self.sheet = Sheet(self.xhelper, sheet)
+
+        self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
+
+
+
 
 BASE_URL = 'http://www.tandfonline.com'
 
@@ -34,6 +50,40 @@ def get_author_email(el):
 def build_search_link(short_link, idx):
     add_on = "&pageSize=20&subjectTitle=&startPage=" + idx
     return short_link + add_on
+
+def google_sheet_main_init(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
+    from new_xhelper import Xhelper
+
+    f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
+    opener = urllib.URLopener()
+    myfile = opener.open(f)
+    file_as_json_str = myfile.read()
+
+    sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
+
+    print 'finding sheet'
+    xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = spread_sheet_name)
+    for sheet in xhelper.worksheets_list:
+        if sheet_name in sheet.title.lower():
+            print 'found sheet'
+            print sheet.title.lower()
+            tandf_gsheet = TandfGsheet(xhelper = xhelper, sheet = sheet)
+            tandf_gsheet.run()
+        else:
+            print "couldn't find sheet :/"
+
+
+def google_sheet_main_menu():
+    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
+    print("This is the email address you have to share that sheet with: ")
+    print("123114053576-compute@developer.gserviceaccount.com")
+    sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+    while sheet_share_confirm != "y" and sheet_share_confirm != "n":
+        sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
+    if sheet_share_confirm == "y":
+        google_sheet_main_init(spread_sheet_name = sheet_name)
+    else:
+        print("well go do that then")
 
 def main(range_start = None, range_stop = None, topic_start = None, topic_stop = None):
     # get homepage
@@ -231,12 +281,37 @@ def ask_if_part_or_whole():
     else:
         return ask_for_range_start_range_stop_topic_start_topic_stop()
 
-def run():
-    if ask_if_part_or_whole():
-        user_settings = ask_for_range_start_range_stop_topic_start_topic_stop()
-        main(range_start = user_settings['range_start'], range_stop = user_settings['range_stop'], topic_start = user_settings['topic_start'], topic_stop = user_settings['topic_stop'])
+def start_menu():
+    menu = """
+Welcome to the Taylor and Francis Scraper!
+With this scraper, you can either scrape all of T and F 
+or, you can just scrape a Google Sheet thats filled with T and F article URLS.
+Which would you like to do?
+1 - Scrape all of T and F (warning, this takes about 100 days if you run just one, single-threaded instance)
+2 - Scrape a Google Sheet thats filled with T and F article URLS.
+"""
+    print menu
+    choice = raw_input('Enter your choice: ')
+    if choice == '1' or choice == '2':
+        return int(choice)
     else:
-        main()
+        start_menu()
+
+def run():
+    start_menu_choice = start_menu()
+    if start_menu_choice == 2:
+        google_sheet_main_menu()
+    elif start_menu_choice == 1:
+        if ask_if_part_or_whole():
+            user_settings = ask_for_range_start_range_stop_topic_start_topic_stop()
+            main(range_start = user_settings['range_start'], range_stop = user_settings['range_stop'], topic_start = user_settings['topic_start'], topic_stop = user_settings['topic_stop'])
+        else:
+            main()
+    else:
+        print "something went wrong"
+
+if __name__ == '__main__':
+    run()
 
 
 # (u'Area Studies', 'http://www.tandfonline.com/topic/4251', 6976)
