@@ -43,7 +43,7 @@ pip install -r requirements.txt
 - from the root of the repository, enter this in your terminal
 
 ```
-python python.py
+python emails.py
 ```
 
 video demo of how to use emails.py
