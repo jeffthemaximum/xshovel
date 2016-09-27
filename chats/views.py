@@ -3,7 +3,7 @@ import string
 from django.db import transaction
 from django.shortcuts import render, redirect
 from scraper.forms import sheetNameForm
-from scraper.models import Journal, Author, Article
+from scraper.models import Journal, Author, Article, Brick
 import haikunator
 from .models import Room
 import pudb
@@ -13,6 +13,7 @@ def about(request):
     article_count = Article.objects.count()
     author_count = Author.objects.count()
     journal_count = Journal.objects.count()
+    brick_count = Brick.objects.count()
     return render(request, "chat/about.html", {
         'form': form,
         'author_count': author_count,
