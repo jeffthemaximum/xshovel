@@ -10,17 +10,32 @@ from operator import itemgetter
 if __name__ != '__main__':
     from scraper.models import Journal, Author, Article, Brick
 
+if if __name__ == '__main__':
+    from new_xhelper import Scraper
+
 class TandfGsheet:
     def __init__(self, xhelper, sheet):
-        pu.db
+
         from new_xhelper import Sheet, Scraper, Helpers
 
         self.xhelper = xhelper
         self.sheet = Sheet(self.xhelper, sheet)
 
         self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
+        self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
+        self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
+        print self.all_urls
 
+        self.all_soups = self.get_all_soups()
 
+    def get_all_soups(self):
+        all_soups = []
+        for url in self.all_urls:
+            print url
+            scraped = Scraper(url)
+            all_soups.append(scraped)
+        return all_soups
+        
 
 
 BASE_URL = 'http://www.tandfonline.com'
@@ -68,7 +83,7 @@ def google_sheet_main_init(search = None, spread_sheet_name = "Copy of Herpetolo
             print 'found sheet'
             print sheet.title.lower()
             tandf_gsheet = TandfGsheet(xhelper = xhelper, sheet = sheet)
-            tandf_gsheet.run()
+            # tandf_gsheet.run()
         else:
             print "couldn't find sheet :/"
 
