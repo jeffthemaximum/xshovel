@@ -10,8 +10,65 @@ from operator import itemgetter
 if __name__ != '__main__':
     from scraper.models import Journal, Author, Article, Brick
 
-if if __name__ == '__main__':
+if __name__ == '__main__':
     from new_xhelper import Scraper
+
+class TandfHelpers:
+    @classmethod
+    def get_article_type(cls, soup):
+        return soup.find('div', {'class': 'toc-heading'}).text.strip()
+
+    @classmethod
+    def get_author_name(cls, soup):
+        author_el = cls.get_author_el(soup)
+        return cls.get_author_name_from_author_el(author_el)
+
+    @classmethod
+    def get_author_el(cls, soup):
+        return soup.find('span', {'class': 'corresponding'}).find('a', {'class': 'entryAuthor'})
+
+    @classmethod
+    def get_author_name_from_author_el(cls, el):
+        try:
+            all_text = el.text
+            other_text = el.find('span', {'class': 'overlay'}).text.strip()
+            return all_text.replace(other_text, '').strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_email(cls, soup):
+        author_el = cls.get_author_el(soup)
+        return cls.get_email_from_author_el(author_el)
+
+    @classmethod
+    def get_email_from_author_el(cls, el):
+        try:
+            return el.find('span', {'class': 'corr-email'}).text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_title(cls, soup):
+        try:
+            return soup.find('div', {'class': 'toc-heading'}).find_next('h1').text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_abstract(cls, soup):
+        try:
+            return soup.find('div', {'class': 'abstractSection'}).text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_journal(cls, soup):
+        try:
+            return soup.find('div', {'class': 'journal'}).find_next('div', {'class': 'info'}).find('h1').text.strip()
+        except:
+            return ""
+
 
 class TandfGsheet:
     def __init__(self, xhelper, sheet):
@@ -28,6 +85,20 @@ class TandfGsheet:
 
         self.all_soups = self.get_all_soups()
 
+        self.all_article_types = self.get_all_article_types()
+
+        self.all_author_names = self.get_all_author_names()
+
+        self.all_author_emails = self.get_all_emails()
+
+        self.all_article_titles = self.get_all_article_titles()
+
+        self.all_abstracts = self.get_all_abstracts()
+
+        self.all_journals = self.get_all_journals()
+
+        self.foo = 5
+
     def get_all_soups(self):
         all_soups = []
         for url in self.all_urls:
@@ -35,7 +106,60 @@ class TandfGsheet:
             scraped = Scraper(url)
             all_soups.append(scraped)
         return all_soups
-        
+
+    def get_all_article_types(self):
+        all_types = []
+        for soup in self.all_soups:
+            a_type = TandfHelpers.get_article_type(soup.soup)
+            all_types.append(a_type)
+        return all_types
+
+    def get_all_author_names(self):
+        all_names = []
+        for soup in self.all_soups:
+            author_name = TandfHelpers.get_author_name(soup.soup)
+            all_names.append(author_name)
+        return all_names
+
+    def get_all_emails(self):
+        all_emails = []
+        for soup in self.all_soups:
+            email = TandfHelpers.get_email(soup.soup)
+            all_emails.append(email)
+        return all_emails
+
+    def get_all_article_titles(self):
+        all_titles = []
+        for soup in self.all_soups:
+            title = TandfHelpers.get_title(soup.soup)
+            all_titles.append(title)
+        return all_titles
+
+    def get_all_abstracts(self):
+        all_abstracts = []
+        for soup in self.all_soups:
+            abstract = TandfHelpers.get_abstract(soup.soup)
+            all_abstracts.append(abstract)
+        return all_abstracts
+
+    def get_all_journals(self):
+        all_journals = []
+        for soup in self.all_soups:
+            journal = TandfHelpers.get_journal(soup.soup)
+            all_journals.append(journal)
+        return all_journals
+
+    def run(self):
+        to_write = [
+            ['type', self.all_article_types],
+            ['name', self.all_author_names],
+            ['email', self.all_author_emails],
+            ['title', self.all_article_titles],
+            ['abstract', self.all_abstracts],
+            ['journal', self.all_journals]
+        ]
+        self.sheet.write_to_sheet(to_write)
+
 
 
 BASE_URL = 'http://www.tandfonline.com'
@@ -83,9 +207,7 @@ def google_sheet_main_init(search = None, spread_sheet_name = "Copy of Herpetolo
             print 'found sheet'
             print sheet.title.lower()
             tandf_gsheet = TandfGsheet(xhelper = xhelper, sheet = sheet)
-            # tandf_gsheet.run()
-        else:
-            print "couldn't find sheet :/"
+            tandf_gsheet.run()
 
 
 def google_sheet_main_menu():
