@@ -19,7 +19,7 @@ def about(request):
         'author_count': author_count,
         'article_count': article_count,
         'journal_count': journal_count,
-        'brick_count', brick_count
+        'brick_count': brick_count
         })
 
 def new_room(request):
