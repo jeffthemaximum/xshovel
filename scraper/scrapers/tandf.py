@@ -16,12 +16,18 @@ if __name__ == '__main__':
 class TandfHelpers:
     @classmethod
     def get_article_type(cls, soup):
-        return soup.find('div', {'class': 'toc-heading'}).text.strip()
+        try:
+            return soup.find('div', {'class': 'toc-heading'}).text.strip()
+        except:
+            return ""
 
     @classmethod
     def get_author_name(cls, soup):
-        author_el = cls.get_author_el(soup)
-        return cls.get_author_name_from_author_el(author_el)
+        try:
+            author_el = cls.get_author_el(soup)
+            return cls.get_author_name_from_author_el(author_el)
+        except:
+            return ""
 
     @classmethod
     def get_author_el(cls, soup):
@@ -29,24 +35,22 @@ class TandfHelpers:
 
     @classmethod
     def get_author_name_from_author_el(cls, el):
-        try:
-            all_text = el.text
-            other_text = el.find('span', {'class': 'overlay'}).text.strip()
-            return all_text.replace(other_text, '').strip()
-        except:
-            return ""
+        all_text = el.text
+        other_text = el.find('span', {'class': 'overlay'}).text.strip()
+        return all_text.replace(other_text, '').strip()
+
 
     @classmethod
     def get_email(cls, soup):
-        author_el = cls.get_author_el(soup)
-        return cls.get_email_from_author_el(author_el)
+        try:
+            author_el = cls.get_author_el(soup)
+            return cls.get_email_from_author_el(author_el)
+        except:
+            return ""
 
     @classmethod
     def get_email_from_author_el(cls, el):
-        try:
-            return el.find('span', {'class': 'corr-email'}).text.strip()
-        except:
-            return ""
+        return el.find('span', {'class': 'corr-email'}).text.strip()
 
     @classmethod
     def get_title(cls, soup):
@@ -66,6 +70,13 @@ class TandfHelpers:
     def get_journal(cls, soup):
         try:
             return soup.find('div', {'class': 'journal'}).find_next('div', {'class': 'info'}).find('h1').text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_first_name(cls, soup):
+        try:
+            return cls.get_author_name(soup).split(" ")[0]
         except:
             return ""
 
@@ -117,7 +128,7 @@ class TandfGsheet:
     def get_all_author_names(self):
         all_names = []
         for soup in self.all_soups:
-            author_name = TandfHelpers.get_author_name(soup.soup)
+            author_name = TandfHelpers.get_first_name(soup.soup)
             all_names.append(author_name)
         return all_names
 
