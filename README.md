@@ -1,3 +1,5 @@
+This repo currently contains python scripts for filtering a list of existing emails (emails.py), gathering abstracts and emails from PLOS (plos.py), and crawling for emails from a list of wiley abstract links (xhelper.py).
+
 # Clone the repo (if you haven't yet)
 
 - in terminal
