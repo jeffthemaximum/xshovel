@@ -261,6 +261,23 @@ class Sheet:
         self.sheet = sheet
         self.all_vals = sheet.get_all_values()
 
+    def write_to_sheet(self, to_write):
+        for write in to_write:
+
+            name = write[0]
+            _list = write[1]
+
+            col_letter = Helpers.get_last_col_letter(self.sheet)
+    
+            self.sheet.update_acell(col_letter + '1', name)
+
+            cell_list = Helpers.get_cell_list_for_plos(self.sheet, col_letter, len(_list))
+
+            for i, cell in enumerate(_list):
+                cell_list[i].value = _list[i]
+
+            self.sheet.update_cells(cell_list)
+
 
 class Wiley:
     def __init__(self, xhelper, sheet, scrape_id, message):
