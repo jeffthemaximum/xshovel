@@ -145,21 +145,21 @@ class SciDi:
     def scrape_abstract(self, soup):
         # abstract_div = soup.find("div", {"class": "abstract"})
         # abstract_div_children = abstract_div.findChildren()
-        try:
-            abstract_nav_str = soup.find(text="Abstract")
-            abstract_nav_other = soup.find("div", {"class":"abstract"})
-            if abstract_nav_str:
-                abstract_element = abstract_nav_str.parent.findNext("p")
-                text = abstract_element.get_text()
-                print text
-                if len(text) < 50:
-                    text = abstract_nav_str.find_next('div').text
-                return text
-            elif abstract_nav_other:
-                abstract_element = abstract_nav_other.findNext("p")
-                text = abstract_element.get_text()
-                print text
-                return text
+        abstract_nav_str = soup.find(text="Abstract")
+        abstract_nav_other = soup.find("div", {"class":"abstract"})
+        if abstract_nav_str:
+            abstract_element = abstract_nav_str.parent.findNext("p")
+            text = abstract_element.get_text()
+            print text
+            if len(text) < 50:
+                text = abstract_nav_str.find_next('div').text
+            return text
+
+        elif abstract_nav_other:
+            abstract_element = abstract_nav_other.findNext("p")
+            text = abstract_element.get_text()
+            print text
+            return text
 
 
     def scrape_title(self, soup):
@@ -177,10 +177,11 @@ class SciDi:
 
     def scrape_journal(self, soup):
         journal_str = soup.find("div", {"class":"title"})
-        journal_name = journal_str.findNext("span")
-        text = journal_name.get_text()
-        print text
-        return text
+        if journal_str:
+            journal_name = journal_str.findNext("span")
+            text = journal_name.get_text()
+            print text
+            return text
 
     def scrape_affil(self, soup):
         affils = soup.find("ul", {"class":"affiliation"})
