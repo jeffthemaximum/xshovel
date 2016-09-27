@@ -1,11 +1,177 @@
 import requests
 import bs4
 import pudb
+import os
+import urllib
 
 from datetime import datetime
 from operator import itemgetter
 
-from scraper.models import Journal, Author, Article, Brick
+if __name__ != '__main__':
+    from scraper.models import Journal, Author, Article, Brick
+
+if __name__ == '__main__':
+    from new_xhelper import Scraper
+
+class TandfHelpers:
+    @classmethod
+    def get_article_type(cls, soup):
+        try:
+            return soup.find('div', {'class': 'toc-heading'}).text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_author_name(cls, soup):
+        try:
+            author_el = cls.get_author_el(soup)
+            return cls.get_author_name_from_author_el(author_el)
+        except:
+            return ""
+
+    @classmethod
+    def get_author_el(cls, soup):
+        return soup.find('span', {'class': 'corresponding'}).find('a', {'class': 'entryAuthor'})
+
+    @classmethod
+    def get_author_name_from_author_el(cls, el):
+        all_text = el.text
+        other_text = el.find('span', {'class': 'overlay'}).text.strip()
+        return all_text.replace(other_text, '').strip()
+
+
+    @classmethod
+    def get_email(cls, soup):
+        try:
+            author_el = cls.get_author_el(soup)
+            return cls.get_email_from_author_el(author_el)
+        except:
+            return ""
+
+    @classmethod
+    def get_email_from_author_el(cls, el):
+        return el.find('span', {'class': 'corr-email'}).text.strip()
+
+    @classmethod
+    def get_title(cls, soup):
+        try:
+            return soup.find('div', {'class': 'toc-heading'}).find_next('h1').text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_abstract(cls, soup):
+        try:
+            return soup.find('div', {'class': 'abstractSection'}).text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_journal(cls, soup):
+        try:
+            return soup.find('div', {'class': 'journal'}).find_next('div', {'class': 'info'}).find('h1').text.strip()
+        except:
+            return ""
+
+    @classmethod
+    def get_first_name(cls, soup):
+        try:
+            return cls.get_author_name(soup).split(" ")[0]
+        except:
+            return ""
+
+
+class TandfGsheet:
+    def __init__(self, xhelper, sheet):
+
+        from new_xhelper import Sheet, Scraper, Helpers
+
+        self.xhelper = xhelper
+        self.sheet = Sheet(self.xhelper, sheet)
+
+        self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
+        self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
+        self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
+        print self.all_urls
+
+        self.all_soups = self.get_all_soups()
+
+        self.all_article_types = self.get_all_article_types()
+
+        self.all_author_names = self.get_all_author_names()
+
+        self.all_author_emails = self.get_all_emails()
+
+        self.all_article_titles = self.get_all_article_titles()
+
+        self.all_abstracts = self.get_all_abstracts()
+
+        self.all_journals = self.get_all_journals()
+
+        self.foo = 5
+
+    def get_all_soups(self):
+        all_soups = []
+        for url in self.all_urls:
+            print url
+            scraped = Scraper(url)
+            all_soups.append(scraped)
+        return all_soups
+
+    def get_all_article_types(self):
+        all_types = []
+        for soup in self.all_soups:
+            a_type = TandfHelpers.get_article_type(soup.soup)
+            all_types.append(a_type)
+        return all_types
+
+    def get_all_author_names(self):
+        all_names = []
+        for soup in self.all_soups:
+            author_name = TandfHelpers.get_first_name(soup.soup)
+            all_names.append(author_name)
+        return all_names
+
+    def get_all_emails(self):
+        all_emails = []
+        for soup in self.all_soups:
+            email = TandfHelpers.get_email(soup.soup)
+            all_emails.append(email)
+        return all_emails
+
+    def get_all_article_titles(self):
+        all_titles = []
+        for soup in self.all_soups:
+            title = TandfHelpers.get_title(soup.soup)
+            all_titles.append(title)
+        return all_titles
+
+    def get_all_abstracts(self):
+        all_abstracts = []
+        for soup in self.all_soups:
+            abstract = TandfHelpers.get_abstract(soup.soup)
+            all_abstracts.append(abstract)
+        return all_abstracts
+
+    def get_all_journals(self):
+        all_journals = []
+        for soup in self.all_soups:
+            journal = TandfHelpers.get_journal(soup.soup)
+            all_journals.append(journal)
+        return all_journals
+
+    def run(self):
+        to_write = [
+            ['type', self.all_article_types],
+            ['name', self.all_author_names],
+            ['email', self.all_author_emails],
+            ['title', self.all_article_titles],
+            ['abstract', self.all_abstracts],
+            ['journal', self.all_journals]
+        ]
+        self.sheet.write_to_sheet(to_write)
+
+
 
 BASE_URL = 'http://www.tandfonline.com'
 
@@ -34,6 +200,38 @@ def get_author_email(el):
 def build_search_link(short_link, idx):
     add_on = "&pageSize=20&subjectTitle=&startPage=" + idx
     return short_link + add_on
+
+def google_sheet_main_init(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
+    from new_xhelper import Xhelper
+
+    f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
+    opener = urllib.URLopener()
+    myfile = opener.open(f)
+    file_as_json_str = myfile.read()
+
+    sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
+
+    print 'finding sheet'
+    xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = spread_sheet_name)
+    for sheet in xhelper.worksheets_list:
+        if sheet_name in sheet.title.lower():
+            print 'found sheet'
+            print sheet.title.lower()
+            tandf_gsheet = TandfGsheet(xhelper = xhelper, sheet = sheet)
+            tandf_gsheet.run()
+
+
+def google_sheet_main_menu():
+    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
+    print("This is the email address you have to share that sheet with: ")
+    print("123114053576-compute@developer.gserviceaccount.com")
+    sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+    while sheet_share_confirm != "y" and sheet_share_confirm != "n":
+        sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
+    if sheet_share_confirm == "y":
+        google_sheet_main_init(spread_sheet_name = sheet_name)
+    else:
+        print("well go do that then")
 
 def main(range_start = None, range_stop = None, topic_start = None, topic_stop = None):
     # get homepage
@@ -232,12 +430,37 @@ def ask_if_part_or_whole():
     else:
         return ask_for_range_start_range_stop_topic_start_topic_stop()
 
-def run():
-    if ask_if_part_or_whole():
-        user_settings = ask_for_range_start_range_stop_topic_start_topic_stop()
-        main(range_start = user_settings['range_start'], range_stop = user_settings['range_stop'], topic_start = user_settings['topic_start'], topic_stop = user_settings['topic_stop'])
+def start_menu():
+    menu = """
+Welcome to the Taylor and Francis Scraper!
+With this scraper, you can either scrape all of T and F 
+or, you can just scrape a Google Sheet thats filled with T and F article URLS.
+Which would you like to do?
+1 - Scrape all of T and F (warning, this takes about 100 days if you run just one, single-threaded instance)
+2 - Scrape a Google Sheet thats filled with T and F article URLS.
+"""
+    print menu
+    choice = raw_input('Enter your choice: ')
+    if choice == '1' or choice == '2':
+        return int(choice)
     else:
-        main()
+        start_menu()
+
+def run():
+    start_menu_choice = start_menu()
+    if start_menu_choice == 2:
+        google_sheet_main_menu()
+    elif start_menu_choice == 1:
+        if ask_if_part_or_whole():
+            user_settings = ask_for_range_start_range_stop_topic_start_topic_stop()
+            main(range_start = user_settings['range_start'], range_stop = user_settings['range_stop'], topic_start = user_settings['topic_start'], topic_stop = user_settings['topic_stop'])
+        else:
+            main()
+    else:
+        print "something went wrong"
+
+if __name__ == '__main__':
+    run()
 
 
 # (u'Area Studies', 'http://www.tandfonline.com/topic/4251', 6976)
