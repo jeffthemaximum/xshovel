@@ -340,7 +340,8 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
 
                     print (article_title, article_link, article_date, journal_name, journal_link, article_type, author_name, author_email)
                     p_idx = str(idx) + " "
-                    print p_idx * 10
+                    print "p_idx " + p_idx * 10
+                    print "J " + str(j)
 
                     # save journal
                     journal, created = Journal.objects.get_or_create(name = journal_name)
