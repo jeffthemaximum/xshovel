@@ -26,3 +26,5 @@ You'll be asked to input the name of the spreadsheet.
 The easier option is to just SSH into our remote machine by typing `ssh experiment@45.55.74.10`, password is `experiment`. 
 
 There, just `cd xshovel` and run `python scrapers/scraper/science-direct`. 
+
+You can also attach to an existing tmux session using `tmux attach`, and then `control + a` + # to get to your window.
