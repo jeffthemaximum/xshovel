@@ -1,5 +1,7 @@
 ### Scrapers
 
+Remote machine is hosted at: `experiment@develubber.com`.
+
 The strategy is:
  - 1. Find an index of journal URLs (Wiley, Tnf, Sciencedirect... etc)
  - 2. Run scrapers
