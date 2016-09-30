@@ -40,7 +40,7 @@ class PlosHelpers:
         return art_type
 
 class Plos:
-    def __init__(self, xhelper, sheet):
+    def __init__(self, xhelper, sheet, search = None, search_url = None):
         self.xhelper = xhelper
         # self.scrape_id = scrape_id
         # self.message = message
@@ -186,14 +186,16 @@ class PlosGsheet(Plos):
         return all_abstracts
 
 class PlosAll(Plos):
-    def __init__(self, search = None, search_url = None):
+    def __init__(self, xhelper, sheet, search, search_url):
         self.search = search
         self.search_url = search_url
         self.scraped_search_url = Scraper(url = self.search_url, kind = "plos", json = True)
         self.list_of_results_as_json = self.scraped_search_url.json['searchResults']['docs']
-
         self.url_col_num = 0
         self.all_urls = self.init_urls()
+
+        Plos.__init__(self, xhelper = xhelper, sheet = sheet, search = search, search_url = search_url)
+
         self.abstract_col_num = 1
         
         self.title_col_num = 2
@@ -309,7 +311,7 @@ def search_main(search = None, spread_sheet_name = "Copy of Herpetology abstract
     worksheet = xhelper.spread_sheet.add_worksheet(title=plos_sheet_name, rows="10000", cols="20")
     print 'made sheet'
 
-    plos = Plos(xhelper = xhelper, sheet = worksheet, search = search, search_url = url)
+    plos = PlosAll(xhelper = xhelper, sheet = worksheet, search = search, search_url = url)
     plos.run()
 
 def gsheet_main(spread_sheet_name):
@@ -370,6 +372,6 @@ if __name__ == '__main__':
         if choice == 1:
             gsheet_main(spread_sheet_name = sheet_name)
         else:
-            main(spread_sheet_name = sheet_name)
+            search_main(spread_sheet_name = sheet_name)
     else:
         print("well go do that then")
