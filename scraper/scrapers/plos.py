@@ -7,33 +7,39 @@ import pudb
 import datetime
 
 class Plos:
-    def __init__(self, xhelper, sheet, search, search_url):
+    def __init__(self, xhelper, sheet, search = None, search_url = None):
         self.xhelper = xhelper
         # self.scrape_id = scrape_id
         # self.message = message
         self.sheet = Sheet(self.xhelper, sheet)
 
-        self.search = search
-        self.search_url = search_url
-        self.scraped_search_url = Scraper(url = self.search_url, kind = "plos", json = True)
-        self.list_of_results_as_json = self.scraped_search_url.json['searchResults']['docs']
+        if search is not None and search_url is not None:
+            self.search = search
+            self.search_url = search_url
+            self.scraped_search_url = Scraper(url = self.search_url, kind = "plos", json = True)
+            self.list_of_results_as_json = self.scraped_search_url.json['searchResults']['docs']
 
-        self.url_col_num = 0
-        self.all_urls = self.init_urls()
-
-        self.abstract_col_num = 1
+            self.url_col_num = 0
+            self.all_urls = self.init_urls()
+            self.abstract_col_num = 1
+            
+            self.title_col_num = 2
+        
+            self.email_col_num = 3
+            
+            self.name_col_num = 4
+            
+        else:
+            self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
+            self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
+            self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
+            
         self.all_abstracts = self.init_abstracts()
-
-        self.title_col_num = 2
         self.all_titles = self.init_titles()
-
         self.all_soups = self.get_all_soups()
-
-        self.email_col_num = 3
         self.all_emails = self.get_emails()
-
-        self.name_col_num = 4
         self.all_names = self.get_names()
+
 
     def get_all_soups(self):
         soups = []
@@ -188,7 +194,16 @@ class Plos:
 
         self.sheet.sheet.update_cells(name_cell_list)
 
-def main(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
+    def run_gspread(self):
+        to_write = [
+            ['name', self.all_names],
+            ['email', self.all_emails],
+            ['title', self.all_titles],
+            ['abstract', self.all_abstracts],
+        ]
+        self.sheet.write_to_sheet(to_write)
+
+def search_main(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
     # search = "amphibians"
 
     now = datetime.datetime.now()
@@ -225,14 +240,63 @@ def main(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
     plos = Plos(xhelper = xhelper, sheet = worksheet, search = search, search_url = url)
     plos.run()
 
+def gsheet_main(spread_sheet_name):
+    f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
+    opener = urllib.URLopener()
+    myfile = opener.open(f)
+    file_as_json_str = myfile.read()
+    sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
+
+    print 'finding sheet'
+    xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = spread_sheet_name)
+    for sheet in xhelper.worksheets_list:
+        if sheet_name in sheet.title.lower():
+            print 'found sheet'
+            print sheet.title.lower()
+            plos = Plos(xhelper = xhelper, sheet = sheet)
+            plos.run_gspread()
+
+
+
+def plos_menu():
+    menu = """
+    The Plos scraper can be used for one of two things:
+
+    It can take a google spreadsheet with plos article URL's,
+    And then scrape those articles to find all the info in them.
+
+    Or, you can just enter a search term here, and then the Scraper
+    will go search PLOS, find articles, and display the info from them in
+    a google sheet.
+
+    Which do you want to do?
+
+    1: Give it a google sheet with PLOS article URL's 
+    2: Search Plos
+"""
+    print menu
+    return int(raw_input("Enter your choice (1 or 2): "))
+
 if __name__ == '__main__':
+
     sheet_name = raw_input("whatchur Google SpreadSheet name? ")
     print("This is the email address you have to share that sheet with: ")
     print("123114053576-compute@developer.gserviceaccount.com")
     sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+
+
     while sheet_share_confirm != "y" and sheet_share_confirm != "n":
         sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
     if sheet_share_confirm == "y":
-        main(spread_sheet_name = sheet_name)
+
+        choice = plos_menu()
+
+        while (choice != 1 and choice != 2):
+            choice = plos_menu()
+
+        if choice == 1:
+            gsheet_main(spread_sheet_name = sheet_name)
+        else:
+            main(spread_sheet_name = sheet_name)
     else:
         print("well go do that then")
