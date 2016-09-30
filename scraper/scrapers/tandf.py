@@ -311,6 +311,10 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
         # for each search page in the topic
         for idx in range(start, stop):
 
+            p_idx = str(idx) + " "
+            print "p_idx " + p_idx * 10
+            print "J " + str(j)
+
             link = topic_link[1] + '?target=topic&pageSize=20&subjectTitle=&startPage=' + str(idx)
 
             res = requests.get(link)
@@ -339,9 +343,6 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
                     author_email = get_author_email(author_el)
 
                     print (article_title, article_link, article_date, journal_name, journal_link, article_type, author_name, author_email)
-                    p_idx = str(idx) + " "
-                    print "p_idx " + p_idx * 10
-                    print "J " + str(j)
 
                     # save journal
                     journal, created = Journal.objects.get_or_create(name = journal_name)
