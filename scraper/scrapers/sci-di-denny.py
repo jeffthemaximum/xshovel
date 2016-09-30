@@ -47,6 +47,7 @@ class SciDi:
         # find email if missing
         for idx, email in enumerate(self.all_emails):
             if email == "":
+
                 soup = self.get_or_find_soup(idx)
                 email = self.scrape_email(soup)
 
@@ -61,10 +62,10 @@ class SciDi:
         for idx, author in enumerate(self.all_authors):
             if author == "":
                 soup = self.get_or_find_soup(idx)
-                author = self.scrape_author(soup)
+                # author = self.scrape_author(soup)
 
-                if author == "":
-                    author = self.scrape_author_name_link(soup)
+                # if author == "":
+                author = self.scrape_author_name_link(soup)
                 # write author back to sheet
                 # 1 - get cell str
                 col_letter = Helpers.get_col_letter_from_number(self.author_col_num, fixer=0)
@@ -170,10 +171,10 @@ class SciDi:
             return text
 
 
-    def scrape_author(self, soup):
-        author = soup.find("a", {"class": "authorName"})
-        if author:
-            return author.text
+    # def scrape_author(self, soup):
+    #     author = soup.find("a", {"class": "authorName"})
+    #     if author:
+    #         return author.text
 
     def scrape_journal(self, soup):
         journal_str = soup.find("div", {"class":"title"})
@@ -194,12 +195,7 @@ class SciDi:
 
     def scrape_author_name_link(self, soup):
         # get email
-        email = soup.find("a", {"class": "auth_mail"})
-        if email is None:
-            email = soup.find("a", {"class": "author-email"})
-        if email is None:
-            author = ""
-
+        email = self.get_email_el(soup)
         # after finding email, find author name that's nearest to email
         try:
             author = email.parent.find("a", {"class": "author-name-link"}).text
@@ -214,13 +210,21 @@ class SciDi:
 
 
     def scrape_email(self, soup):
+        email = self.get_email_el(soup)
+        if email is not None:
+            email = email['href'].split(':')[1]
+            return email
+        else:
+            return ""
+
+    def get_email_el(self, soup):
         try:
-            email = soup.find("a", {"class": "auth_mail"})['href'].split(':')[1]
+            email = soup.find("a", {"class": "auth_mail"})
         except:
             try:
-                email = soup.find("a", {"class": "author-email"})['href'].split(':')[1]
+                email = soup.find("a", {"class": "author-email"})
             except:
-                email = ""
+                email = None
         return email
 
 if __name__ == '__main__':
