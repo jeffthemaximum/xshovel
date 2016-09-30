@@ -6,39 +6,51 @@ import urllib
 import pudb
 import datetime
 
+class PlosHelpers:
+    @classmethod
+    def find_title_from_soup(cls, soup):
+        try:
+            title = soup.soup.find('h1', {'id': 'artTitle'}).text.strip()
+        except:
+            title = ""
+        return title
+
+    @classmethod
+    def find_abstract_from_soup(cls, soup):
+        try:
+            abstract = soup.soup.find('div', {'class': 'abstract'}).find_next('p').text.strip()
+        except:
+            abstract = ""
+        return abstract
+
+    @classmethod
+    def find_affiliation_from_soup(cls, soup):
+        try:
+            a = soup.soup.find('p', {'id': 'authAffiliations-0'}).text.strip()
+        except:
+            a = ""
+        return a
+
+    @classmethod
+    def find_art_type_from_soup(cls, soup):
+        try:
+            art_type = soup.soup.find('div', {'class': 'article-type'}).find_next('p').text.strip()
+        except:
+            art_type = ""
+        return art_type
+
 class Plos:
-    def __init__(self, xhelper, sheet, search = None, search_url = None):
+    def __init__(self, xhelper, sheet):
         self.xhelper = xhelper
         # self.scrape_id = scrape_id
         # self.message = message
         self.sheet = Sheet(self.xhelper, sheet)
 
-        if search is not None and search_url is not None:
-            self.search = search
-            self.search_url = search_url
-            self.scraped_search_url = Scraper(url = self.search_url, kind = "plos", json = True)
-            self.list_of_results_as_json = self.scraped_search_url.json['searchResults']['docs']
-
-            self.url_col_num = 0
-            self.all_urls = self.init_urls()
-            self.abstract_col_num = 1
-            
-            self.title_col_num = 2
-        
-            self.email_col_num = 3
-            
-            self.name_col_num = 4
-            
-        else:
-            self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
-            self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
-            self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
-            
-        self.all_abstracts = self.init_abstracts()
-        self.all_titles = self.init_titles()
         self.all_soups = self.get_all_soups()
         self.all_emails = self.get_emails()
         self.all_names = self.get_names()
+        self.all_affiliations = self.init_affiliations()
+        self.all_art_types = self.init_art_types()
 
 
     def get_all_soups(self):
@@ -124,6 +136,74 @@ class Plos:
 
         return titles
 
+    def init_affiliations(self):
+        affiliations = []
+        for soup in self.all_soups:
+            affiliation = PlosHelpers.find_affiliation_from_soup(soup)
+            affiliations.append(affiliation)
+        return affiliations
+
+    def init_art_types(self):
+        art_types = []
+        for soup in self.all_soups:
+            art_type = PlosHelpers.find_art_type_from_soup(soup)
+            art_types.append(art_type)
+        return art_types
+
+class PlosGsheet(Plos):
+    def __init__(self, xhelper, sheet):
+        self.sheet = Sheet(xhelper, sheet)
+        self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
+        self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
+        self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
+        Plos.__init__(self, xhelper, sheet)
+        self.all_titles = self.init_titles()
+        self.all_abstracts = self.init_abstracts()
+
+    def run_gspread(self):
+        to_write = [
+            ['name', self.all_names],
+            ['email', self.all_emails],
+            ['affiliation', self.all_affiliations],
+            ['title', self.all_titles],
+            ['abstract', self.all_abstracts],
+            ['type', self.all_art_types]
+        ]
+        self.sheet.write_to_sheet(to_write)
+
+    def init_titles(self):
+        all_titles = []
+        for soup in self.all_soups:
+            title = PlosHelpers.find_title_from_soup(soup)
+            all_titles.append(title)
+        return all_titles
+
+    def init_abstracts(self):
+        all_abstracts = []
+        for soup in self.all_soups:
+            abstract = PlosHelpers.find_abstract_from_soup(soup)
+            all_abstracts.append(abstract)
+        return all_abstracts
+
+class PlosAll(Plos):
+    def __init__(self, search = None, search_url = None):
+        self.search = search
+        self.search_url = search_url
+        self.scraped_search_url = Scraper(url = self.search_url, kind = "plos", json = True)
+        self.list_of_results_as_json = self.scraped_search_url.json['searchResults']['docs']
+
+        self.url_col_num = 0
+        self.all_urls = self.init_urls()
+        self.abstract_col_num = 1
+        
+        self.title_col_num = 2
+    
+        self.email_col_num = 3
+        
+        self.name_col_num = 4
+
+        self.all_abstracts = self.init_abstracts()
+        self.all_titles = self.init_titles()
 
     def run(self, url_col_name = "pageUrl", title_col_name = "title", abstract_col_name = "abstract", email_col_name = "email", name_col_name = "name"):
         # write urls to Sheet
@@ -194,14 +274,6 @@ class Plos:
 
         self.sheet.sheet.update_cells(name_cell_list)
 
-    def run_gspread(self):
-        to_write = [
-            ['name', self.all_names],
-            ['email', self.all_emails],
-            ['title', self.all_titles],
-            ['abstract', self.all_abstracts],
-        ]
-        self.sheet.write_to_sheet(to_write)
 
 def search_main(search = None, spread_sheet_name = "Copy of Herpetology abstracts"):
     # search = "amphibians"
@@ -253,7 +325,8 @@ def gsheet_main(spread_sheet_name):
         if sheet_name in sheet.title.lower():
             print 'found sheet'
             print sheet.title.lower()
-            plos = Plos(xhelper = xhelper, sheet = sheet)
+            plos = PlosGsheet(xhelper = xhelper, sheet = sheet)
+            pu.db
             plos.run_gspread()
 
 
