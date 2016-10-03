@@ -98,9 +98,6 @@ class Scraper:
             try:
                 response = requests.get(self.url, headers=headers, cookies=cookies, timeout=1)
                 return bs4.BeautifulSoup(response.text)
-            except requests.exceptions.ReadTimeout:
-                print "failed, retrying"
-                return self.cook_soup(link)
             except requests.exceptions.MissingSchema:
                 return ''
 
