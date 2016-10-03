@@ -71,6 +71,7 @@ class SciDi:
                 col_letter = Helpers.get_col_letter_from_number(self.author_col_num, fixer=0)
                 cell_str = Helpers.get_cell_string(col_letter, idx, offset=1)
                 # 2 - write to sheet
+                print author
                 self.sheet.sheet.update_acell(cell_str, author)
                 # 3 - write author back to list of authors
                 self.all_authors[idx] = author
@@ -218,13 +219,10 @@ class SciDi:
             return ""
 
     def get_email_el(self, soup):
-        try:
-            email = soup.find("a", {"class": "auth_mail"})
-        except:
-            try:
-                email = soup.find("a", {"class": "author-email"})
-            except:
-                email = None
+        
+        email = soup.find("a", {"class": "auth_mail"})
+        if email is None:
+            email = soup.find("a", {"class": "author-email"})
         return email
 
 if __name__ == '__main__':
