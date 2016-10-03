@@ -328,7 +328,6 @@ def gsheet_main(spread_sheet_name):
             print 'found sheet'
             print sheet.title.lower()
             plos = PlosGsheet(xhelper = xhelper, sheet = sheet)
-            pu.db
             plos.run_gspread()
 
 
