@@ -60,32 +60,6 @@ class Scraper:
         if self.kind == 'scidi':
 
             cookies = {
-<<<<<<< HEAD
-                'dis_show': '1',
-                'EUID': '527c915a-6895-11e6-8094-00000aab0f26',
-                'optimizelyEndUserId': 'oeu1471890125159r0.9900789276868995',
-                '__gads': 'ID=fa85ce6e5fe33f5d:T=1471890129:S=ALNI_MYzjtiG7WB3nQ-rgVs-eO1jQqU3_A',
-                'utt': '2eb6b3cd0b427513b7f9096fc6ecec3d78e213f-F8t1',
-                'RETURN_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cac4b68b9ec80cda83e03050801616143bd982e2ec0a3cfe64ebc0d525201b52d0fd927e2011b439',
-                'CARS_COOKIE': '36dfcecdd3d09dd7c390b38632ec553688d8da0286187d84e8db4a1db20831c85ce76c63cc87acac5cabdd359595526233ae2ff86603736d',
-                'sd_scs': 'ef77f3e6-8979-11e6-9717-00000aacb360',
-                'sid': 'd1ffdc96-fe7b-4f4f-902b-30fa6f4df527',
-                'sd_session_id': 'dbf6-4ccfb0b87517bd247a1280abaaa971154be',
-                'acw': 'cbf6-4ccfb0b87517bd247a1280abaaa971154be%7C%24%7C5429B4DBABA7D249C0BD9382BAE2CE11BFFDCCDA102D1133208BEF66911B5AA06BCAFA7F5380058F820644B75171C9CCD7A7562E6418C902A2F71CEDB4D1441201F2EBA9E59BCCB334D1B91475DB891353D37F737A99946FC8285668A82FB105D74FDB647D9EF376D5F064C9ABA16CB4C3AD69F669660F19B8464FFF25516AB9',
-                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17078%7CMCMID%7C91371896751838507907694063682733165664%7CMCAAMLH-1475592700%7C7%7CMCAAMB-1476111549%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
-                'RT': 'sl=1&ss=1475506747477&tt=2166&obo=0&sh=1475506749650%3D1%3A0%3A2166&dm=sciencedirect.com&si=1b5818af-3626-4490-9ea8-d9bf81601aa3&bcn=%2F%2F36ebc202.mpstat.us%2F&ld=1475506749651&nu=http%3A%2F%2Fwww.sciencedirect.com%2Fscience%3F&cl=1475506752410&r=http%3A%2F%2Fwww.sciencedirect.com%2F&ul=1475506752419&hd=1475506754104',
-                'USER_STATE_COOKIE': '4887aad917cb8ecd122f897381d0d05e0afea1437b3c3dbd57c85370002e99cd3b80c5eed7b22cd14ddc3f12c1f119db',
-                'MIAMISESSION': 'ef5dfab8-8979-11e6-9717-00000aacb360:3652960375',
-                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e91069237606310567c0829015f2c9dd1e7f53b901efb3085634c77790407f6a59cf4b8b43fd52f8c3492c0e9ed6cfd425a0424200f78470fced00b96e4115ed64991c2aaad873d6419d93a7ef2068366cd04155099610fb71ca1218f528f6abd1ea38486cb0ae3432b36562db0309c365c165ea6d5ae3bbfe6f1cffbc83c839bac1ed9a4f7498cf3c7e56483e4f0659973d64bdbbddd3551d3d81ce34342d5f755170b5f8597609555f07b5e9ebc93a031c9bc4adb66301',
-                'DEFAULT_SESSION_SUBJECT': '',
-                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22search%22%2C%22204775011%22%3A%22gc%22%7D',
-                'optimizelyBuckets': '%7B%7D',
-                'fingerPrintToken': 'cdcbcbf3f61503b10b84fc10ed8321d2',
-                's_pers': '%20v8%3D1475507578383%7C1570115578383%3B%20v8_s%3DLess%2520than%25207%2520days%7C1475509378383%3B%20c19%3Dsd%253Asearch%253Aresults%253Aarticles%7C1475509378392%3B%20v68%3D1475507578060%7C1475509378407%3B',
-                's_sq': '%5B%5BB%5D%5D',
-                's_cc': 'true',
-                's_sess': '%20v31%3D1471890125659%3B%20s_cpc%3D0%3B%20e41%3D1%3B%20s_ppvl%3Dsd%25253Asearch%25253Aresults%25253Aarticles%252C9%252C9%252C1009%252C2029%252C1009%252C2560%252C1440%252C1%252CP%3B%20s_ppv%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C94%252C94%252C1998%252C2029%252C1009%252C2560%252C1440%252C1%252CP%3B',
-=======
                 'EUID': '5995e810-8988-11e6-b660-00000aacb35f',
                 'CARS_COOKIE': '594cb23eb90961e0d2b7f68a21c2deb29cfa9f8a240e48d54a7e433b48470e509264b86371b555d626944128e3f209d5f91ce0b9c089e51f',
                 'sd_session_id': '3625b98284b87511987d4654c8ffbf48d173582',
@@ -106,7 +80,6 @@ class Scraper:
                 'DEFAULT_SESSION_SUBJECT': '',
                 'MIAMISESSION': '59946814-8988-11e6-b660-00000aacb35f:3652965741',
                 '__gads': 'ID=b01b60a2260ae2e1:T=1475512941:S=ALNI_MZS9aAsTb-4LDmV3PDP47Xff6F4og',
->>>>>>> 1151a6b68b6f8ef8726957cd0464eaba02936b26
             }
 
             headers = {
@@ -120,20 +93,11 @@ class Scraper:
                 'Connection': 'keep-alive',
             }
             try:
-                response = requests.get(self.url, headers=headers, cookies=cookies, timeout=1)
-                return bs4.BeautifulSoup(response.text)
-            except requests.exceptions.MissingSchema:
-                return ''
-
-<<<<<<< HEAD
-=======
-            try:
                 response = requests.get(self.url, headers=headers, cookies=cookies)
                 return bs4.BeautifulSoup(response.text)
-            except requests.exceptions.ReadTimeout:		
-                print "failed, retrying"		
+            except requests.exceptions.ReadTimeout:
+                print "failed, retrying"
                 return self.cook_soup(link)
->>>>>>> 1151a6b68b6f8ef8726957cd0464eaba02936b26
         else:
             try:
                 response = requests.get(self.url, timeout=1)
