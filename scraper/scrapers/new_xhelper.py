@@ -58,25 +58,28 @@ class Scraper:
         """
 
         if self.kind == 'scidi':
+
             cookies = {
-                'EUID': '88675d40-7e7a-11e6-9d38-00000aab0f27',
-                'sd_scs': '8875a044-7e7a-11e6-9d38-00000aab0f27',
-                'sid': '14e8aaf7-e962-4f64-9891-68c61458e0bc',
-                'optimizelyEndUserId': 'oeu1474297543594r0.4892093811861049',
-                '__gads': 'ID=c224b0a47aed5ddb:T=1474297545:S=ALNI_MYEPpmrSGEgr4KbFcO21T-H3YxKWQ',
-                'USER_STATE_COOKIE': '346fa8c434beaa188373c1181c0ae9a6f9ea30ce9036ed5abadf1cb3e580fb2d',
-                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17068%7CMCMID%7C87522486594869997002263906783116549148%7CMCAAMLH-1474902344%7C7%7CMCAAMB-1475252036%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
-                's_sq': '%5B%5BB%5D%5D',
-                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cb1468c63e712961e8908ef471ab6177d378e78873d526a2',
-                'fingerPrintToken': '7d05da9378415932baaf811efa29a19f',
-                '__cp': '1474647542902',
+                'EUID': '5995e810-8988-11e6-b660-00000aacb35f',
+                'CARS_COOKIE': '594cb23eb90961e0d2b7f68a21c2deb29cfa9f8a240e48d54a7e433b48470e509264b86371b555d626944128e3f209d5f91ce0b9c089e51f',
+                'sd_session_id': '3625b98284b87511987d4654c8ffbf48d173582',
+                'USER_STATE_COOKIE': '346fa8c434beaa18dbb50e2b7e6f20803c2c344c39e22674',
+                'sd_scs': '59a7b4fa-8988-11e6-b660-00000aacb35f',
+                'sid': '56acf25f-b43b-44a5-ac2b-f69182e363c4',
+                'optimizelyEndUserId': 'oeu1475512940451r0.43781041819301514',
                 'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22direct%22%2C%22204775011%22%3A%22gc%22%7D',
-                's_pers': '%20v8%3D1474647543077%7C1569255543077%3B%20v8_s%3DLess%2520than%25207%2520days%7C1474649343077%3B%20c19%3Dsd%253Aproduct%253Ajournal%253Aarticle%7C1474649343083%3B%20v68%3D1474647542614%7C1474649343090%3B',
+                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cb1468c63e712961e8908ef471ab6177d378e78873d526a2',
+                'fingerPrintToken': 'b907bdfb96816612afd7ccad16a86dde',
+                '__cp': '1475512940753',
+                'optimizelyBuckets': '%7B%227518222960%22%3A%227520133284%22%7D',
+                'optimizelyPendingLogEvents': '%5B%5D',
+                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17078%7CMCMID%7C66584079156298363913836538183507406006%7CMCAAMLH-1476117740%7C7%7CMCAAMB-1476117740%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
+                's_pers': '%20v8%3D1475512940849%7C1570120940849%3B%20v8_s%3DFirst%2520Visit%7C1475514740849%3B%20c19%3Dsd%253Aproduct%253Ajournal%253Aarticle%7C1475514740855%3B%20v68%3D1475512940380%7C1475514740857%3B',
+                's_sess': '%20e41%3D1%3B%20s_cpc%3D1%3B%20v31%3D1475512940380%3B',
                 's_cc': 'true',
-                'optimizelyBuckets': '%7B%7D',
                 'DEFAULT_SESSION_SUBJECT': '',
-                'MIAMISESSION': 'b3b12374-81a8-11e6-bf16-00000aacb35d:3652100343',
-                's_sess': '%20v31%3D1474297543729%3B%20s_cpc%3D0%3B%20e41%3D1%3B%20s_ppvl%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C48%252C47%252C782%252C551%252C782%252C1440%252C900%252C2%252CL%3B%20s_ppv%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C48%252C47%252C782%252C551%252C782%252C1440%252C900%252C2%252CL%3B',
+                'MIAMISESSION': '59946814-8988-11e6-b660-00000aacb35f:3652965741',
+                '__gads': 'ID=b01b60a2260ae2e1:T=1475512941:S=ALNI_MZS9aAsTb-4LDmV3PDP47Xff6F4og',
             }
 
             headers = {
@@ -90,8 +93,12 @@ class Scraper:
                 'Connection': 'keep-alive',
             }
 
-            response = requests.get(self.url, headers=headers, cookies=cookies)
-            return bs4.BeautifulSoup(response.text)
+            try:
+                response = requests.get(self.url, headers=headers, cookies=cookies)
+                return bs4.BeautifulSoup(response.text)
+            except requests.exceptions.ReadTimeout:		
+                print "failed, retrying"		
+                return self.cook_soup(link)
         else:
             try:
                 response = requests.get(self.url)
