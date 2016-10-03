@@ -186,12 +186,19 @@ class SciDi:
 
     def scrape_affil(self, soup):
         affils = soup.find("ul", {"class":"affiliation"})
-        if affils:
+        try:
             inst = affils.findNext("li")
             inst = affils.findNext("span")
             text = inst.get_text()
-            print text
-            return text
+        except:
+            try:
+                affils = soup.find("span", {"class":"affiliation__text"})
+                text = affils.get_text()
+            except:
+                text = ""
+
+        print text
+        return text
 
     def scrape_author_name_link(self, soup):
         # get email
@@ -202,7 +209,7 @@ class SciDi:
 
         except:
             try:
-                 author = email.parent.find("a", {"class": "authorName"}).text
+                author = soup.find("a", {"class": "authorName svAuthor"}).text
             except:
                 author = ""
 
