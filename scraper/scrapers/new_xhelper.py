@@ -334,7 +334,7 @@ class Wiley:
                     if "\xe2\x80\xa0".decode('utf-8') in cgi.escape(author):
                         return author
                 except:
-                    pu.db
+                    return ""
         # try corresponding author
         if authors_as_list[0] is not None:
             return authors_as_text_list[0]
