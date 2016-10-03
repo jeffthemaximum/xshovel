@@ -147,7 +147,7 @@ class Plos:
         art_types = []
         for soup in self.all_soups:
             art_type = PlosHelpers.find_art_type_from_soup(soup)
-            art_types.appen (art_type)
+            art_types.append(art_type)
         return art_types
 
 class PlosGsheet(Plos):
