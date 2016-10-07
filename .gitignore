@@ -3,3 +3,4 @@ venv
 staticfiles
 scraper/secrets/
 db.sqlite3
+env/

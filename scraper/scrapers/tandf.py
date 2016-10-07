@@ -74,6 +74,13 @@ class TandfHelpers:
             return ""
 
     @classmethod
+    def get_affil(cls, soup):
+        try:
+            return soup.find('span', {'class': 'overlay'}).text.strip()
+        except:
+            return ""
+
+    @classmethod
     def get_first_name(cls, soup):
         try:
             return cls.get_author_name(soup).split(" ")[0]
@@ -107,6 +114,7 @@ class TandfGsheet:
         self.all_abstracts = self.get_all_abstracts()
 
         self.all_journals = self.get_all_journals()
+        self.all_affils = self.get_all_affils()
 
         self.foo = 5
 
@@ -160,6 +168,13 @@ class TandfGsheet:
             all_journals.append(journal)
         return all_journals
 
+    def get_all_affils(self):
+        all_affils = []
+        for soup in self.all_soups:
+            affil = TandfHelpers.get_affil(soup.soup)
+            all_affils.append(affil)
+        return all_affils
+
     def run(self):
         to_write = [
             ['type', self.all_article_types],
@@ -168,6 +183,7 @@ class TandfGsheet:
             ['title', self.all_article_titles],
             ['abstract', self.all_abstracts],
             ['journal', self.all_journals]
+            ['affil', self.all_affils]
         ]
         self.sheet.write_to_sheet(to_write)
 
