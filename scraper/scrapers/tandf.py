@@ -3,6 +3,7 @@ import bs4
 import pudb
 import os
 import urllib
+import gspread
 
 from datetime import datetime
 from operator import itemgetter
@@ -27,7 +28,11 @@ class TandfHelpers:
             author_el = cls.get_author_el(soup)
             return cls.get_author_name_from_author_el(author_el)
         except:
-            return ""
+            try:
+                author = soup.find('span', {'class': 'contribDegrees'}).find('a', {'class': 'entryAuthor'}).text.strip()
+                return author
+            except:
+                return ""
 
     @classmethod
     def get_author_el(cls, soup):
@@ -57,7 +62,10 @@ class TandfHelpers:
         try:
             return soup.find('div', {'class': 'toc-heading'}).find_next('h1').text.strip()
         except:
-            return ""
+            try:
+                return soup.find('div', {'class': 'widget-body'}).find_next('h1').text.strip()
+            except:
+                return ""
 
     @classmethod
     def get_abstract(cls, soup):
@@ -95,28 +103,17 @@ class TandfGsheet:
 
         self.xhelper = xhelper
         self.sheet = Sheet(self.xhelper, sheet)
-
         self.url_col_num = Helpers.get_column_number(self.sheet, 'pageUrl')
         self.all_urls = Helpers.get_all_wiley_urls(self.sheet, self.url_col_num)
         self.all_urls = Helpers.get_all_column_vals_as_row(self.sheet, self.url_col_num)
-        print self.all_urls
-
         self.all_soups = self.get_all_soups()
-
         self.all_article_types = self.get_all_article_types()
-
         self.all_author_names = self.get_all_author_names()
-
         self.all_author_emails = self.get_all_emails()
-
         self.all_article_titles = self.get_all_article_titles()
-
         self.all_abstracts = self.get_all_abstracts()
-
         self.all_journals = self.get_all_journals()
         self.all_affils = self.get_all_affils()
-
-        self.foo = 5
 
     def get_all_soups(self):
         all_soups = []
@@ -177,13 +174,12 @@ class TandfGsheet:
 
     def run(self):
         to_write = [
-            ['type', self.all_article_types],
-            ['name', self.all_author_names],
             ['email', self.all_author_emails],
+            ['name', self.all_author_names],
             ['title', self.all_article_titles],
-            ['abstract', self.all_abstracts],
-            ['journal', self.all_journals]
-            ['affil', self.all_affils]
+            ['affil', self.all_affils],
+            ['journal', self.all_journals],
+            ['abstract', self.all_abstracts]
         ]
         self.sheet.write_to_sheet(to_write)
 
@@ -205,7 +201,10 @@ def get_author_name(el):
         other_text = el.find('span', {'class': 'overlay'}).text.strip()
         return all_text.replace(other_text, '').strip()
     except:
-        ""
+        try:
+            return el.find('a', {'class': 'entryAuthor'}).text.strip()
+        except:
+            ""
 
 def get_author_email(el):
     try:
@@ -266,7 +265,7 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
                 # get link
                 link_stub = base_url_plus_stub(li.find('a')['href']).split('?')[0]
                 # get topic
-                topic = li.text.strip() 
+                topic = li.text.strip()
 
                 # get num results
                 # 1 - get first page
@@ -279,7 +278,7 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
                 multi_hit.append((topic, link_stub, int(last_page_num)))
 
                 print link_stub
-            
+
             correct_num_list = min(multi_hit, key=itemgetter(2))
             topic_links.append(correct_num_list)
 
@@ -348,14 +347,14 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
                     journal_name = li.find('div', {'class': 'publication-meta'}).find_all('span')[0].text.strip()
                     journal_link = base_url_plus_stub(li.find('div', {'class': 'publication-meta'}).find_all('span')[0].find('a')['href'])
 
-                    # go to article link
-                    res = requests.get(article_link)
+                    # go to article linkarticle_link
+                    res = requests.get()
                     article_soup = bs4.BeautifulSoup(res.text)
                     article_type = article_soup.find('div', {'class': 'toc-heading'}).text.strip()
 
                     author_el = article_soup.find('span', {'class': 'corresponding'}).find('a', {'class': 'entryAuthor'})
                     author_name = get_author_name(author_el)
-                    
+
                     author_email = get_author_email(author_el)
 
                     print (article_title, article_link, article_date, journal_name, journal_link, article_type, author_name, author_email)
@@ -366,25 +365,26 @@ def main(range_start = None, range_stop = None, topic_start = None, topic_stop =
                         journal.link = journal_link
                         journal.save()
 
-                    # save author 
+                    # save author
                     if author_email != "":
                         author, created = Author.objects.get_or_create(email = author_email)
                         if created:
                             author.name = author_name
                             author.save()
 
-                        # save article 
+                        # save article
                         try:
                             article = Article.objects.get(link = article_link, title = article_title)
                         except Article.DoesNotExist:
                             article = Article.objects.create(
-                                link = article_link, 
+                                link = article_link,
                                 title = article_title,
                                 date = article_date.strftime('%Y-%m-%d'),
                                 author = author,
-                                journal = journal
+                                journal = journal,
+                                affil = affil
                             )
-                        
+
                 except:
                     site = 'tandf'
                     brick, created = Brick.objects.get_or_create(url = article_link, site = site)
@@ -450,7 +450,7 @@ def ask_if_part_or_whole():
 def start_menu():
     menu = """
 Welcome to the Taylor and Francis Scraper!
-With this scraper, you can either scrape all of T and F 
+With this scraper, you can either scrape all of T and F
 or, you can just scrape a Google Sheet thats filled with T and F article URLS.
 Which would you like to do?
 1 - Scrape all of T and F (warning, this takes about 100 days if you run just one, single-threaded instance)
@@ -478,43 +478,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-
-
-# (u'Area Studies', 'http://www.tandfonline.com/topic/4251', 6976)
-# (u'Arts', 'http://www.tandfonline.com/topic/4250', 4080)
-# (u'Behavioral Sciences', 'http://www.tandfonline.com/topic/4252', 12470)
-# (u'Bioscience', 'http://www.tandfonline.com/topic/4253', 15117)
-# (u'Built Environment', 'http://www.tandfonline.com/topic/4254', 3320)
-# (u'Communication Studies', 'http://www.tandfonline.com/topic/4256', 2171)
-# (u'Computer Science', 'http://www.tandfonline.com/topic/4255', 3842)
-# (u'Development Studies', 'http://www.tandfonline.com/topic/4257', 3412)
-# (u'Earth Sciences', 'http://www.tandfonline.com/topic/4258', 6429)
-# (u'Economics, Finance, Business & Industry', 'http://www.tandfonline.com/topic/4259', 13503)
-# (u'Education', 'http://www.tandfonline.com/topic/4261', 15388)
-# (u'Engineering & Technology', 'http://www.tandfonline.com/topic/4260', 20060)
-# (u'Environment & Agriculture', 'http://www.tandfonline.com/topic/4248', 14561)
-# (u'Environment and Sustainability', 'http://www.tandfonline.com/topic/4262', 7045)
-# (u'Food Science & Technology', 'http://www.tandfonline.com/topic/4263', 2749)
-# (u'Geography', 'http://www.tandfonline.com/topic/4264', 7626)
-# (u'Health and Social Care', 'http://www.tandfonline.com/topic/4266', 7588)
-# (u'Humanities', 'http://www.tandfonline.com/topic/4267', 15590)
-# (u'Information Science', 'http://www.tandfonline.com/topic/4268', 2158)
-# (u'Language & Literature', 'http://www.tandfonline.com/topic/4269', 5395)
-# (u'Law', 'http://www.tandfonline.com/topic/4270', 1692)
-# (u'Mathematics & Statistics', 'http://www.tandfonline.com/topic/4271', 9059)
-# (u'Medicine, Dentistry, Nursing & Allied Health', 'http://www.tandfonline.com/topic/4272', 24867)
-# (u'Museum and Heritage Studies', 'http://www.tandfonline.com/topic/4249', 1263)
-# (u'Physical Sciences', 'http://www.tandfonline.com/topic/4273', 19203)
-# (u'Politics & International Relations', 'http://www.tandfonline.com/topic/4274', 10937)
-# (u'Social Sciences', 'http://www.tandfonline.com/topic/4278', 11016)
-# (u'Sports and Leisure', 'http://www.tandfonline.com/topic/4277', 3158)
-# (u'Tourism, Hospitality and Events', 'http://www.tandfonline.com/topic/4279', 690)
-# (u'Urban Studies', 'http://www.tandfonline.com/topic/4280', 1911)
-# 253276
-
-    
-
-
-        
-        
-

@@ -21,7 +21,7 @@ class Scraper:
             self.json = self.get_json(self.url)
         else:
             self.soup = self.cook_soup(self.url)
-        
+
     def get_json(self, link):
         if self.kind == "plos":
             cookies = {
@@ -49,7 +49,7 @@ class Scraper:
         response = requests.get(self.url, headers=headers, cookies=cookies)
         response = json.loads(response.text)
         return response
-        
+
 
     def cook_soup(self, link):
         """
@@ -60,43 +60,40 @@ class Scraper:
         if self.kind == 'scidi':
 
             cookies = {
-                'dis_show': '1',
-                'EUID': '527c915a-6895-11e6-8094-00000aab0f26',
-                'optimizelyEndUserId': 'oeu1471890125159r0.9900789276868995',
-                '__gads': 'ID=fa85ce6e5fe33f5d:T=1471890129:S=ALNI_MYzjtiG7WB3nQ-rgVs-eO1jQqU3_A',
-                'utt': '2eb6b3cd0b427513b7f9096fc6ecec3d78e213f-F8t1',
-                'RETURN_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cac4b68b9ec80cda83e03050801616143bd982e2ec0a3cfe64ebc0d525201b52d0fd927e2011b439',
-                'sd_scs': 'ef77f3e6-8979-11e6-9717-00000aacb360',
-                'sid': 'd1ffdc96-fe7b-4f4f-902b-30fa6f4df527',
-                'acw': 'cbf6-4ccfb0b87517bd247a1280abaaa971154be%7C%24%7C5429B4DBABA7D249C0BD9382BAE2CE11BFFDCCDA102D1133208BEF66911B5AA06BCAFA7F5380058F820644B75171C9CCD7A7562E6418C902A2F71CEDB4D1441201F2EBA9E59BCCB334D1B91475DB891353D37F737A99946FC8285668A82FB105D74FDB647D9EF376D5F064C9ABA16CB4C3AD69F669660F19B8464FFF25516AB9',
-                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17078%7CMCMID%7C91371896751838507907694063682733165664%7CMCAAMLH-1475592700%7C7%7CMCAAMB-1476111549%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
-                'RT': 'sl=1&ss=1475521833865&tt=1835&obo=0&sh=1475521835707%3D1%3A0%3A1835&dm=sciencedirect.com&si=1b5818af-3626-4490-9ea8-d9bf81601aa3&bcn=%2F%2F36ebc234.mpstat.us%2F&ld=1475521835708&nu=http%3A%2F%2Fwww.sciencedirect.com%2Fscience%3F&cl=1475522862186&r=http%3A%2F%2Fwww.sciencedirect.com%2F&ul=1475522862197&hd=1475522864262',
+                'EUID': '133abad0-8988-11e6-9745-00000aacb35f',
+                'optimizelyEndUserId': 'oeu1475512822799r0.771189576693806',
+                'sid': '4d1e4960-34ff-4362-945a-3ab720166d23',
+                'RETURN_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cac4b68b9ec80cda83e0305080161614f3ba89ddb999110a82e11f424b2ae430492d130da388e8db',
+                '__gads': 'ID=a5c9ae06b8642d7c:T=1475751793:S=ALNI_MaHC2pMn34GEUZhyCpo3YgMqJqRvw',
+                'utt': 'de62-7fba980a75182879721be35a5f6fe158051-kMFh',
+                'RT': 'sl=1&ss=1476293879343&tt=1278&obo=0&sh=1476293880626%3D1%3A0%3A1278&dm=sciencedirect.com&si=b20ad04a-26f5-462e-beb2-865c413a5d69&bcn=%2F%2F36eb5491.mpstat.us%2F&ld=1476293880627&nu=http%3A%2F%2Fwww.sciencedirect.com%2Fscience%3F&cl=1476293913564&r=http%3A%2F%2Fwww.sciencedirect.com%2F&ul=1476293913567&hd=1476293915091',
+                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22referral%22%2C%22204775011%22%3A%22gc%22%7D',
+                'optimizelyBuckets': '%7B%227518222960%22%3A%227520133284%22%7D',
+                'USER_STATE_COOKIE': '346fa8c434beaa1868d888f9bff294574b25afcdce02571e2af6ac26d9e7255ba291621c79175c51bea542a1b028d91e',
+                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17088%7CMCMID%7C40988532049088846699128729067617119367%7CMCAAMLH-1476743416%7C7%7CMCAAMB-1476395407%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
                 's_sq': '%5B%5BB%5D%5D',
-                'CARS_COOKIE': '36dfcecdd3d09dd7c390b38632ec553688d8da0286187d84e8db4a1db20831c85ce76c63cc87acac5cabdd359595526233ae2ff86603736d',
-                'sd_session_id': 'dbf6-4ccfb0b87517bd247a1280abaaa971154be',
-                'USER_STATE_COOKIE': '4887aad917cb8ecd122f897381d0d05e3c9bd67e102ab6cf031122f8d41e3575e921edcd484825e9f1849f7cca60540f',
-                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22search%22%2C%22204775011%22%3A%22gc%22%7D',
-                'optimizelyBuckets': '%7B%227518222960%22%3A%220%22%7D',
-                'fingerPrintToken': 'cdcbcbf3f61503b10b84fc10ed8321d2',
-                '__cp': '1475526846916',
-                's_pers': '%20v8%3D1475526847071%7C1570134847071%3B%20v8_s%3DLess%2520than%25201%2520day%7C1475528647071%3B%20c19%3Dsd%253Aproduct%253Ajournal%253Aarticle%7C1475528647081%3B%20v68%3D1475526846321%7C1475528647093%3B',
-                's_cc': 'true',
-                'optimizelyPendingLogEvents': '%5B%5D',
-                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cb1468c63e712961e8908ef471ab6177d378e78873d526a2',
-                'MIAMISESSION': '0f4f7270-899d-11e6-b558-00000aacb361:3652979647',
+                'CARS_COOKIE': 'bb0dfb1baaad695ecceeb9ab338a3dd61092832eb8825303fae0da8ab47859469dc7d77d33048aed7d088d8381f3c64ea7313c8075e54c6b',
+                'sd_scs': '36ddee14-9237-11e6-b88c-00000aab0f01',
+                'sd_session_id': '6ca5-35a7f44c75165d2c282e1c8d208a35ee381-9N',
+                'acw': '5ca5-35a7f44c75165d2c282e1c8d208a35ee381-I%7C%24%7CEAEA19775435F7DD2594B833C5704FF8372B392A6FE4DA80335D16812C9A1BB000210EE3DDC182041FA3CE57CD56C7CAC33BE4FB4DB6E92E5B3700340E16E7640165D02B05A144434C791D85F4617A054F50542FAA9C36177289FC857EB26C7BF0B571C956AE28B344CD43A4661B80CDE6783EE84C89D6CFE4D9A288B6821CFBAE664BF78CEA8622290FC56F8D255946',
+                'fingerPrintToken': '4fcf781f972b36bd6315e435859c4c2a',
                 'DEFAULT_SESSION_SUBJECT': '',
-                's_sess': '%20v31%3D1471890125659%3B%20s_cpc%3D0%3B%20e41%3D1%3B%20s_ppvl%3Dsd%25253Asearch%25253Aresults%25253Aarticles%252C5%252C5%252C1085%252C2335%252C1085%252C2560%252C1440%252C1%252CP%3B%20s_ppv%3Dsd%25253Aproduct%25253Ajournal%25253Aarticle%252C54%252C54%252C1085%252C2335%252C1085%252C2560%252C1440%252C1%252CP%3B',
+                'MIAMISESSION': '0a12436c-9237-11e6-8a14-00000aacb35e:3653920529',
+                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e9106923760631056f21e9b98c8455e89a8fd7c241e65f30fdf92d36c1ef4fcc671a90a8ad2bb0c3e5cf8ebcd540f065a5c3cbdb4aa199144456e76bae3929d8cb8215409a523611d8d9c15afe1e717c9015f96a6f613accf3c57a12a139712c',
+                's_pers': '%20v8%3D1476467729975%7C1571075729975%3B%20v8_s%3DLess%2520than%25201%2520day%7C1476469529975%3B%20c19%3Dsd%253Asearch%253Aresults%253Aarticles%7C1476469530041%3B%20v68%3D1476467729370%7C1476469530051%3B',
+                's_cc': 'true',
+                's_sess': '%20v31%3D1475695086525%3B%20s_cpc%3D0%3B%20s_ppvl%3Dsd%25253Asearch%25253Aresults%25253Aarticles%252C26%252C25%252C780%252C1357%252C780%252C1440%252C900%252C2%252CP%3B%20e41%3D1%3B%20s_ppv%3Dsd%25253Asearch%25253Aresults%25253Aarticles%252C25%252C25%252C780%252C1357%252C780%252C1440%252C900%252C2%252CP%3B',
             }
 
             headers = {
-                'Pragma': 'no-cache',
                 'Accept-Encoding': 'gzip, deflate, sdch',
                 'Accept-Language': 'en-US,en;q=0.8',
                 'Upgrade-Insecure-Requests': '1',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.50 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Cache-Control': 'no-cache',
+                'Referer': 'http://www.sciencedirect.com/',
                 'Connection': 'keep-alive',
+                'Cache-Control': 'max-age=0',
             }
 
             try:
