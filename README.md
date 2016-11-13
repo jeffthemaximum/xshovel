@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 # To run the emails.py
 
-- from the root of the repository, enter this in your terminal
+- from scraper -> scrapers, enter this in your terminal
 
 ```
 python emails.py
