@@ -75,7 +75,7 @@ class Scraper:
                 'sd_session_id': 'd2a3-bf420df58511779ee27c2b2b5ff1ee3866d',
                 'USER_STATE_COOKIE': '346fa8c434beaa1868d888f9bff294574b25afcdce02571e1c4c43e12e2444ad',
                 's_sq': '%5B%5BB%5D%5D',
-                'fingerPrintToken': '2a5750dbdf5d258914f25dd060412dc6',
+                'fingerPrintToken': '42f6c0c65649a965624bdaddcffd325b',
                 'DEFAULT_SESSION_SUBJECT': '',
                 'MIAMISESSION': '08aaa1f8-9468-11e6-a2d9-00000aacb361:3654162722',
                 'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e9106923760631056f21e9b98c8455e89a8fd7c241e65f30fdf92d36c1ef4fcca4db89c96ea751b4f8a80022f4990499d26ce7ff5e556b435566471e5c77b1b9e039f03ec986bcacc3592fcdd9405285e4812ef120b47b95',
