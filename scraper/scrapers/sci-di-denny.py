@@ -229,26 +229,17 @@ class SciDi:
 
 if __name__ == '__main__':
 
-    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
-    print("This is the email address you have to share that sheet with: ")
-    print("123114053576-compute@developer.gserviceaccount.com")
-    sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
+    sheet_name = raw_input("Google SpreadSheet name? ")
 
-    while sheet_share_confirm != "y" and sheet_share_confirm != "n":
-        sheet_share_confirm = raw_input("You bricked it. Have you done that yet? (enter y or n): ").rstrip()
+    f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
+    opener = urllib.URLopener()
+    myfile = opener.open(f)
+    file_as_json_str = myfile.read()
+    xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = sheet_name)
 
-    if sheet_share_confirm == "y":
-        f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
-        opener = urllib.URLopener()
-        myfile = opener.open(f)
-        file_as_json_str = myfile.read()
-        xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = sheet_name)
+    for sheet in xhelper.worksheets_list:
+        if 'science direct' in sheet.title.lower():
+            print sheet.title
+            sci_di = SciDi(xhelper = xhelper, sheet = sheet)
+            sci_di.run()
 
-        for sheet in xhelper.worksheets_list:
-            if 'science direct' in sheet.title.lower():
-                print sheet.title
-                sci_di = SciDi(xhelper = xhelper, sheet = sheet)
-                sci_di.run()
-
-    else:
-        print "Well go do that then"
