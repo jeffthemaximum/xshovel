@@ -72,13 +72,9 @@ class SheetToScoreHelpers:
 
         flattened_synonyms = [word.replace("_", " ") for word in flattened_synonyms]
 
-
-
         for word in keywords:
             if word.lower() in abstract.lower():
                 count += 1
-
-
 
         for word in flattened_synonyms:
             if word.lower() in abstract.lower():
@@ -154,20 +150,27 @@ class SheetToScore:
         # list comp removes empty strings
         self.all_keywords = [x for x in Helpers.get_all_column_vals_as_row(self.sheet, self.keyword_col_num) if x]
 
-        ### abstracts
-
-        # levenshtein
+        # abstracts
         self.abstract_col_num = Helpers.get_column_number(self.sheet, 'abstract')
         self.all_abstracts = Helpers.get_all_column_vals_as_row(self.sheet, self.abstract_col_num)
+
+        ### good scores
+        # levenshtein
         self.all_abstracts_scores_by_levenshtein = self.score_by_levenshtein()
-
         # coritcal
-        self.all_abstract_scores_by_cortical = self.score_by_cortical_api()
-
+        self.all_abstract_scores_by_cortical = self.score_by_cortical_api(self.all_keywords)
         # jeff
-        self.all_abstract_scores_by_jeff = self.score_by_jeff()
+        self.all_abstract_scores_by_jeff = self.score_by_jeff(self.all_keywords)
 
-    def score_by_cortical_api(self):
+        ### bad scores
+        # cortical
+        self.badword_col_num = Helpers.get_column_number(self.sheet, 'badwords')
+        self.all_badwords = [x for x in Helpers.get_all_column_vals_as_row(self.sheet, self.badword_col_num) if x]
+        self.all_badwords_scores_by_cortical = self.score_by_cortical_api(self.all_badwords)
+        # jeff
+        self.all_badwords_scores_by_jeff = self.score_by_jeff(self.all_badwords)
+
+    def score_by_cortical_api(self, array_of_words):
         ### Code for single score api
         # all_abstracts_scores = []
         # cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
@@ -177,7 +180,7 @@ class SheetToScore:
 
         ### Code for bulk score api
         cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
-        return cortical_api_full_client.bulk_score_by_cortical_api(self.all_abstracts, self.all_keywords)
+        return cortical_api_full_client.bulk_score_by_cortical_api(self.all_abstracts, array_of_words)
 
     def score_by_levenshtein(self):
 
@@ -187,10 +190,10 @@ class SheetToScore:
             all_abstracts_scores.append(score)
         return all_abstracts_scores
 
-    def score_by_jeff(self):
+    def score_by_jeff(self, array_of_words):
         all_abstracts_scores = []
         for abstract in self.all_abstracts:
-            score = SheetToScoreHelpers.score_by_jeff_with_synonyms(abstract, self.all_keywords)
+            score = SheetToScoreHelpers.score_by_jeff_with_synonyms(abstract, array_of_words)
             all_abstracts_scores.append(score)
         return all_abstracts_scores
 
@@ -198,7 +201,9 @@ class SheetToScore:
         to_write = [
             ['levenshtein', self.all_abstracts_scores_by_levenshtein],
             ['coritcal', self.all_abstract_scores_by_cortical],
-            ['jeff with synonyms', self.all_abstract_scores_by_jeff]
+            ['jeff with synonyms', self.all_abstract_scores_by_jeff],
+            ['bw-cortical', self.all_badwords_scores_by_cortical],
+            ['bw-jeff', self.all_badwords_scores_by_jeff]
         ]
         self.sheet.write_to_sheet(to_write)
         
