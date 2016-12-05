@@ -8,46 +8,39 @@ if __name__ == '__main__':
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from scrapers.new_xhelper import Xhelper, Helpers, Sheet
 
-
-class SheetWithNamesHelper:
+class SheetWithJournalsHelpers:
     @classmethod
-    def find_first_name_from_name(cls, name):
-        '''
-        please don't judge me.
-        this is a much harder problem than it seems
-        '''
-        name = HumanName(name)
-        if '.' in name.first or len(name.first) < 2:
-            if name.middle:
-                return name.middle
-            else:
-                return name.first
+    def add_the_to_journal(cls, journal):
+        journal_word_list = journal.split(" ")
+        if journal_word_list[0].lower() == "journal":
+            journal_word_list.insert(0, 'the')
+            return " ".join(journal_word_list)
         else:
-            return name.first
+            return journal
 
-
-class SheetWithNames:    
+class SheetWithJournals:
     def __init__(self, xhelper, sheet):
         self.xhelper = xhelper
         self.sheet = Sheet(self.xhelper, sheet)
 
         # names
-        self.name_col_num = Helpers.get_column_number(self.sheet, 'name')
-        self.all_names = Helpers.get_all_column_vals_as_row(self.sheet, self.name_col_num)
-        self.all_first_names = self.find_first_names_from_names()
+        self.journal_col_num = Helpers.get_column_number(self.sheet, 'journal')
+        self.all_journals = Helpers.get_all_column_vals_as_row(self.sheet, self.journal_col_num)
+        self.all_edited_journals = self.add_the_to_relevant_journals()
 
-    def find_first_names_from_names(self):
-        all_first_names = []
-        for name in self.all_names:
-            first_name = SheetWithNamesHelper.find_first_name_from_name(name)
-            all_first_names.append(first_name)
-        return all_first_names
+    def add_the_to_relevant_journals(self):
+        all_edited_journals = []
+        for journal in self.all_journals:
+            edited_journal = SheetWithJournalsHelpers.add_the_to_journal(journal)
+            all_edited_journals.append(edited_journal)
+        return all_edited_journals
 
     def run(self):
         to_write = [
-            ['first-name-best-guess', self.all_first_names]
+            ['edited-journal', self.all_edited_journals],
         ]
         self.sheet.write_to_sheet(to_write)
+
 
 def google_sheet_main_init(spread_sheet_name):
     f = os.environ['XPYTHON_GSPREAD_CONFIG_FILE']
@@ -64,8 +57,8 @@ def google_sheet_main_init(spread_sheet_name):
         if sheet_name in sheet.title.lower():
             print 'found sheet'
             print sheet.title.lower()
-            sheet_with_names = SheetWithNames(xhelper = xhelper, sheet = sheet)
-            sheet_with_names.run()
+            sheet_with_journals = SheetWithJournals(xhelper = xhelper, sheet = sheet)
+            sheet_with_journals.run()
 
 def main():
 
