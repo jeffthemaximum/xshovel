@@ -1,31 +1,50 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+import codecs
+import sys
 import os
 import urllib
-import sys
 import pudb
+import string
 
 from nameparser import HumanName
+
 
 if __name__ == '__main__':
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from scrapers.new_xhelper import Xhelper, Helpers, Sheet
 
 class SheetWithWeirdCharsHelpers:
-    @classmethod
-    def remove_values_from_list(cls, the_list, val):
-        return [value for value in the_list if value != val]
 
     @classmethod
-    def clear_weird_chars(cls, title):
+    def clear_weird_chars(cls, word):
 
-        weird_chars = ['\xc3\xa2']
-        for weird_char in weird_chars:
-            if weird_char in title:
-                title_list = title.split(" ")
-                title_list = SheetWithWeirdCharsHelpers.remove_values_from_list(title_list, weird_chars)
-                title0 = " ".join(title_list)
-        return title
+        # â€™ == '\xe2\u20ac\u2122'
+        # '\xe2\u20ac\u2122' should be "'"
+        if '\xe2\u20ac\u2122' in word:
+            word = word.replace('\xe2\u20ac\u2122', "'")
 
+        # â€˜ == '\xe2\u20ac\u02dc'
+        # '\xe2\u20ac\u02dc' should be "'"
+        if '\xe2\u20ac\u02dc' in word:
+            word = word.replace('\xe2\u20ac\u02dc', "'")
 
+        # â€œ == '\xe2\u20ac\u0153'
+        # '\xe2\u20ac\u0153' should be "'"
+        if '\xe2\u20ac\u0153' in word:
+            word = word.replace('\xe2\u20ac\u0153', "'")
+
+        # â€ == '\xe2\u20ac'
+        # '\xe2\u20ac' should be "'"
+        if '\xe2\u20ac' in word:
+            word = word.replace('\xe2\u20ac', "'")
+
+        # â == '\xe2'
+        # '\xe2' should be ''
+        if '\xe2' in word:
+            word = word.replace('\xe2', '')
+
+        return word.strip()
 
 class SheetWithWeirdChars:
     def __init__(self, xhelper, sheet):
@@ -46,7 +65,7 @@ class SheetWithWeirdChars:
 
     def run(self):
         to_write = [
-            ['titles-without-\xc3\xa2', self.all_cleared_titles]
+            ['titles-without-wierd-chars', self.all_cleared_titles]
         ]
         self.sheet.write_to_sheet(to_write)
 
