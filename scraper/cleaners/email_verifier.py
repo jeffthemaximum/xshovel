@@ -4,6 +4,8 @@ import urllib
 import sys
 import pudb
 
+from flanker.addresslib import address
+
 if __name__ == '__main__':
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from scrapers.new_xhelper import Xhelper, Helpers, Sheet
@@ -16,11 +18,23 @@ class KickBox:
     def verify_single_email(cls, email):
         return cls.kickbox.verify(email)
 
+class Mailgun:
+    @classmethod
+    def verify_single_email(cls, email):
+        return address.validate_address(email)
+
 class SheetWithEmailsHelper:
     @classmethod
     def find_verified_email_by_kickbox(cls, email):
         return KickBox.verify_single_email(email)
-        
+
+    @classmethod
+    def find_verified_email_by_mailgun(cls, email):
+        mg_email = Mailgun.verify_single_email(email)
+        if mg_email:
+            return mg_email
+        else:
+            return 0
 
 class SheetWithEmails:    
     def __init__(self, xhelper, sheet):
@@ -30,6 +44,8 @@ class SheetWithEmails:
         self.email_col_num = Helpers.get_column_number(self.sheet, 'email')
         self.all_emails = Helpers.get_all_column_vals_as_row(self.sheet, self.email_col_num)
 
+
+        ### Kickbox
         self.all_kb_responses = self.find_verified_emails_from_kb()
 
         self.all_kb_results = self.results_kb()
@@ -40,7 +56,20 @@ class SheetWithEmails:
         self.all_kb_users = self.users_kb()
         self.all_kb_domains = self.domains_kb()
 
+        ### Mailgun
+        self.all_mg_emails = self.find_verified_emails_from_mg()
 
+    def find_verified_emails_from_mg(self):
+        all_mg_emails = []
+        count = 0
+
+        for email in self.all_emails:
+            count += 1
+            print("mailgun verify " + str(count))
+
+            mg_email = SheetWithEmailsHelper.find_verified_email_by_mailgun(email)
+            all_mg_emails.append(mg_email)
+        return all_mg_emails
 
     def find_verified_emails_from_kb(self):
 
@@ -51,7 +80,7 @@ class SheetWithEmails:
         for email in self.all_emails:
 
             count += 1
-            print("kb verify " + str(count))
+            print("kickbox verify " + str(count))
 
             response = SheetWithEmailsHelper.find_verified_email_by_kickbox(email)
 
@@ -89,6 +118,7 @@ class SheetWithEmails:
             ['KB-normalized', self.all_kb_normalized_emails],
             ['KB-user', self.all_kb_users],
             ['KB-domain', self.all_kb_domains],
+            ['MG-emails', self.all_mg_emails]
         ]
         self.sheet.write_to_sheet(to_write)
 
