@@ -39,6 +39,10 @@ class PlosHelpers:
             art_type = ""
         return art_type
 
+    @classmethod
+    def find_journal_from_soup(cls, soup):
+        
+
 class Plos:
     def __init__(self, xhelper, sheet, search = None, search_url = None):
         self.xhelper = xhelper
@@ -159,6 +163,7 @@ class PlosGsheet(Plos):
         Plos.__init__(self, xhelper, sheet)
         self.all_titles = self.init_titles()
         self.all_abstracts = self.init_abstracts()
+        self.all_journals = self.init_journals()
 
     def run_gspread(self):
         to_write = [
@@ -167,6 +172,7 @@ class PlosGsheet(Plos):
             ['affiliation', self.all_affiliations],
             ['title', self.all_titles],
             ['abstract', self.all_abstracts],
+            ['journal', self.all_journals],
             ['type', self.all_art_types]
         ]
         self.sheet.write_to_sheet(to_write)
@@ -184,6 +190,13 @@ class PlosGsheet(Plos):
             abstract = PlosHelpers.find_abstract_from_soup(soup)
             all_abstracts.append(abstract)
         return all_abstracts
+
+    def init_journals(self):
+        all_journals = []
+        for soup in self.all_soups:
+            journal = PlosHelpers.find_journal_from_soup(soup)
+            all_journals.append(journal)
+        return all_journals
 
 class PlosAll(Plos):
     def __init__(self, xhelper, sheet, search, search_url):

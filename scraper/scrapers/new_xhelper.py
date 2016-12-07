@@ -21,7 +21,7 @@ class Scraper:
             self.json = self.get_json(self.url)
         else:
             self.soup = self.cook_soup(self.url)
-
+        
     def get_json(self, link):
         if self.kind == "plos":
             cookies = {
@@ -49,7 +49,7 @@ class Scraper:
         response = requests.get(self.url, headers=headers, cookies=cookies)
         response = json.loads(response.text)
         return response
-
+        
 
     def cook_soup(self, link):
         """
@@ -58,56 +58,51 @@ class Scraper:
         """
 
         if self.kind == 'scidi':
+
             cookies = {
-                'EUID': '133abad0-8988-11e6-9745-00000aacb35f',
-                'optimizelyEndUserId': 'oeu1475512822799r0.771189576693806',
-                '__gads': 'ID=a5c9ae06b8642d7c:T=1475751793:S=ALNI_MaHC2pMn34GEUZhyCpo3YgMqJqRvw',
-                'utt': 'de62-7fba980a75182879721be35a5f6fe158051-kMFh',
-                'RT': 'sl=1&ss=1476293879343&tt=1278&obo=0&sh=1476293880626%3D1%3A0%3A1278&dm=sciencedirect.com&si=b20ad04a-26f5-462e-beb2-865c413a5d69&bcn=%2F%2F36eb5491.mpstat.us%2F&ld=1476293880627&nu=http%3A%2F%2Fwww.sciencedirect.com%2Fscience%3F&cl=1476293913564&r=http%3A%2F%2Fwww.sciencedirect.com%2F&ul=1476293913567&hd=1476293915091',
-                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22referral%22%2C%22204775011%22%3A%22gc%22%7D',
+                'EUID': '5995e810-8988-11e6-b660-00000aacb35f',
+                'CARS_COOKIE': '594cb23eb90961e0d2b7f68a21c2deb29cfa9f8a240e48d54a7e433b48470e509264b86371b555d626944128e3f209d5f91ce0b9c089e51f',
+                'sd_session_id': '3625b98284b87511987d4654c8ffbf48d173582',
+                'USER_STATE_COOKIE': '346fa8c434beaa18dbb50e2b7e6f20803c2c344c39e22674',
+                'sd_scs': '59a7b4fa-8988-11e6-b660-00000aacb35f',
+                'sid': '56acf25f-b43b-44a5-ac2b-f69182e363c4',
+                'optimizelyEndUserId': 'oeu1475512940451r0.43781041819301514',
+                'optimizelySegments': '%7B%22204658328%22%3A%22false%22%2C%22204728159%22%3A%22none%22%2C%22204736122%22%3A%22direct%22%2C%22204775011%22%3A%22gc%22%7D',
+                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e910692376063105cb1468c63e712961e8908ef471ab6177d378e78873d526a2',
+                'fingerPrintToken': 'b907bdfb96816612afd7ccad16a86dde',
+                '__cp': '1475512940753',
                 'optimizelyBuckets': '%7B%227518222960%22%3A%227520133284%22%7D',
-                'sd_scs': '08c925f6-9468-11e6-a2d9-00000aacb361',
-                'sid': 'f401c27c-cc15-446f-95ea-db8ac831510e',
-                'acw': 'bfa7-fb14fa2d751303edca43730eb9641193a1f-YR%7C%24%7CA5E25478D32DF691AE385C51DC602C8EB7A3AFE896A6892325AF9B0B59BE63F0409D9E2A642E04B9FBDF2412ABA486E918A3A3797C62E866CA78B3284B76DF4442AB81AD438BCC06BB3C0F6E147324643D6C325446FA14373485E11795DBB0E7A340B7CC38B21065C22B9974C5F1915EE6783EE84C89D6CFCD147F3304F392D12DBD73626DCDDF041AADD401008AB036',
-                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17092%7CMCMID%7C40988532049088846699128729067617119367%7CMCAAMLH-1476743416%7C7%7CMCAAMB-1476708528%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
-                'CARS_COOKIE': 'a1675cbe18cd480c603e33eab92ebcddf0ef6c767bc3cd578856bd4a867ec24da303f8f6c10f1ec6c4b29a16dbba86c9496778709914a052',
-                'sd_session_id': 'd2a3-bf420df58511779ee27c2b2b5ff1ee3866d',
-                'USER_STATE_COOKIE': '346fa8c434beaa1868d888f9bff294574b25afcdce02571e1c4c43e12e2444ad',
-                's_sq': 'elsevier-sd-prod%252Celsevier-global-prod%3D%2526c.%2526a.%2526activitymap.%2526page%253Dsd%25253Abrowse%25253Ajournal%2526link%253DExport%2526region%253Dexport_popup%2526pageIDType%253D1%2526.activitymap%2526.a%2526.c%2526pid%253Dsd%25253Abrowse%25253Ajournal%2526pidt%253D1%2526oid%253DExport%2526oidt%253D3%2526ot%253DSUBMIT',
-                'fingerPrintToken': '42f6c0c65649a965624bdaddcffd325b',
-                'DEFAULT_SESSION_SUBJECT': '',
-                'MIAMISESSION': '184d8be6-aa8b-11e6-929d-00000aab0f6c:3656595699',
-                'TARGET_URL': 'fcf74dd786744d87fbaaaf8652a764ab4a79b0d3ed681139e91069237606310567c0829015f2c9dd545bacad0076bfa36bee441378b06a631ce2fedd2fb486c56d2b6ea023a66507c6806243ac6ef4e1259930e9319db042380eac8742d9cb139eeb349d80b5da679b2acc406ca28de1f7bdb7791f3e4e395d97afbeefba190e2ba4999ee34b1db25c043ba261089afab959d1cafed7aca0887df72f06792ebb1feff105f2fdc7724750e2a6f6bc361bc9906b8698abe4b3fb973bc7966d04ebc9d2cc383531f73023a5e976936020da7fd16687b8e6e3262bae242c26575f563dd18a874b5dcff6030015745ddd3e070152464da03901daab8354c433ff84a2aa80940ad995f9dd296563854638e3c535808f49b17cae6a9885a6a4f960bab1a76fdd6e355660232c387c8abe07c6c95197d4774df4f06ee7a855fe5c7e8b66879042c7be9ec1b2a1ccc99f3991aa36238ee5a468b976e3a78e1959c525c3c9a866081fc4a37ed2333deb4742a755d001144f9af4780ab9',
+                'optimizelyPendingLogEvents': '%5B%5D',
+                'AMCV_4D6368F454EC41940A4C98A6%40AdobeOrg': '793872103%7CMCIDTS%7C17078%7CMCMID%7C66584079156298363913836538183507406006%7CMCAAMLH-1476117740%7C7%7CMCAAMB-1476117740%7CNRX38WO0n5BH8Th-nqAG_A%7CMCAID%7CNONE',
+                's_pers': '%20v8%3D1475512940849%7C1570120940849%3B%20v8_s%3DFirst%2520Visit%7C1475514740849%3B%20c19%3Dsd%253Aproduct%253Ajournal%253Aarticle%7C1475514740855%3B%20v68%3D1475512940380%7C1475514740857%3B',
+                's_sess': '%20e41%3D1%3B%20s_cpc%3D1%3B%20v31%3D1475512940380%3B',
                 's_cc': 'true',
-                's_pers': '%20c19%3Dsd%253Abrowse%253Ajournal%7C1479144697232%3B%20v68%3D1479142896672%7C1479144697247%3B%20v8%3D1479142899476%7C1573750899476%3B%20v8_s%3DLess%2520than%25201%2520day%7C1479144699476%3B',
-                's_sess': '%20v31%3D1479077224704%3B%20s_cpc%3D0%3B%20e41%3D1%3B%20s_ppvl%3Dsd%25253Abrowse%25253Ajournal%252C13%252C13%252C823%252C1683%252C823%252C2560%252C1440%252C1%252CP%3B%20s_ppv%3Dsd%25253Asearch%25253Aresults%25253Aarticles%252C29%252C29%252C823%252C1683%252C823%252C2560%252C1440%252C1%252CP%3B',
+                'DEFAULT_SESSION_SUBJECT': '',
+                'MIAMISESSION': '59946814-8988-11e6-b660-00000aacb35f:3652965741',
+                '__gads': 'ID=b01b60a2260ae2e1:T=1475512941:S=ALNI_MZS9aAsTb-4LDmV3PDP47Xff6F4og',
             }
 
             headers = {
+                'Pragma': 'no-cache',
                 'Accept-Encoding': 'gzip, deflate, sdch',
                 'Accept-Language': 'en-US,en;q=0.8',
                 'Upgrade-Insecure-Requests': '1',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.50 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Referer': 'http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=-1088923054&_st=13&filterType=&searchtype=a&originPage=rslt_list&_origin=&_mlktType=&md5=86ee156724218e1aa3e137a1b3c08acb',
+                'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
-                'Cache-Control': 'max-age=0',
             }
-
 
             try:
                 response = requests.get(self.url, headers=headers, cookies=cookies)
                 return bs4.BeautifulSoup(response.text)
-            except requests.exceptions.ReadTimeout:
-                print "failed, retrying"
+            except requests.exceptions.ReadTimeout:		
+                print "failed, retrying"		
                 return self.cook_soup(link)
         else:
             try:
-                response = requests.get(self.url, timeout=1)
+                response = requests.get(self.url)
                 return bs4.BeautifulSoup(response.text)
-            except requests.exceptions.ReadTimeout:
-                print "failed, retrying"
-                return self.cook_soup(link)
             except requests.exceptions.MissingSchema:
                 return ''
 
@@ -330,7 +325,7 @@ class Wiley:
                     if "\xe2\x80\xa0".decode('utf-8') in cgi.escape(author):
                         return author
                 except:
-                    return ""
+                    pu.db
         # try corresponding author
         if authors_as_list[0] is not None:
             return authors_as_text_list[0]
