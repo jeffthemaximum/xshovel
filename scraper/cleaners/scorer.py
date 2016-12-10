@@ -115,8 +115,11 @@ class SheetToScoreHelpers:
         except retinasdk.client.exceptions.CorticalioException as e:
             if e.message == 'Response 422: {"errors":["elements[0].text The input text was empty. (was )"]}':
                 return 0
+            elif 'Response 400' in e.message:
+                print("there was a 400 error with cortical. If this keeps happening, try to investigate by leaving a breakpoint here.")
+                return 0
             else:
-                pu.db
+                print("unknown error with cortical. If this keeps happening, try to investigate by leaving a breakpoint here.")
 
         return scores_as_json.weightedScoring
 
@@ -171,16 +174,20 @@ class SheetToScore:
         self.all_badwords_scores_by_jeff = self.score_by_jeff(self.all_badwords)
 
     def score_by_cortical_api(self, array_of_words):
-        ### Code for single score api
-        # all_abstracts_scores = []
-        # cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
-        # for abstract in self.all_abstracts:
-        #     score = cortical_api_full_client.single_score_by_cortical_api(abstract, self.all_keywords)
-        #     all_abstracts_scores.append(score)
-
-        ### Code for bulk score api
-        cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
-        return cortical_api_full_client.bulk_score_by_cortical_api(self.all_abstracts, array_of_words)
+        try:
+            ### Code for bulk score api
+            cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
+            return cortical_api_full_client.bulk_score_by_cortical_api(self.all_abstracts, array_of_words)
+        except:
+            error = "You gots too many abstracts, so cortical can't handle them all at once. Sending one at a time."
+            print(error)
+            ### Code for single score api
+            all_abstracts_scores = []
+            cortical_api_full_client = SheetToScoreHelpers(len(self.all_abstracts))
+            for abstract in self.all_abstracts:
+                score = cortical_api_full_client.single_score_by_cortical_api(abstract, self.all_keywords)
+                all_abstracts_scores.append(score)
+            return all_abstracts_scores
 
     def score_by_levenshtein(self):
 
@@ -214,8 +221,8 @@ def google_sheet_main_init(spread_sheet_name):
     myfile = opener.open(f)
     file_as_json_str = myfile.read()
 
-    # sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
-    sheet_name = "final list"
+    sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
+    # sheet_name = "final list"
 
     print 'finding sheet'
     xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = spread_sheet_name)
@@ -229,7 +236,7 @@ def google_sheet_main_init(spread_sheet_name):
 
 def main():
 
-    sheet_name = "Copy of polisci"
+    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
     google_sheet_main_init(spread_sheet_name = sheet_name)  
 
     # sheet_name = raw_input("whatchur Google SpreadSheet name? ")

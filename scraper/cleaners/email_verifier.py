@@ -128,8 +128,8 @@ def google_sheet_main_init(spread_sheet_name):
     myfile = opener.open(f)
     file_as_json_str = myfile.read()
 
-    # sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
-    sheet_name = "final list"
+    sheet_name = raw_input("What's the name of the sheet? ").strip().lower()
+    # sheet_name = "final list"
 
     print 'finding sheet'
     xhelper = Xhelper(json_file_name = file_as_json_str, spread_sheet_name = spread_sheet_name)
@@ -142,10 +142,10 @@ def google_sheet_main_init(spread_sheet_name):
 
 def main():
 
-    sheet_name = "Copy of polisci"
+    sheet_name = raw_input("whatchur Google SpreadSheet name? ")
     google_sheet_main_init(spread_sheet_name = sheet_name)  
 
-    # sheet_name = raw_input("whatchur Google SpreadSheet name? ")
+    
     # print("This is the email address you have to share that sheet with: ")
     # print("123114053576-compute@developer.gserviceaccount.com")
     # sheet_share_confirm = raw_input("Have you done that yet? (enter y or n): ").rstrip()
